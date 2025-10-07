@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login | Order Manager App</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "Poppins", sans-serif;
+    }
+
+    body {
+      height: 100vh;
+      display: flex;
+      background: linear-gradient(120deg, #06122d, #2c3e50);
+    }
+
+    .left-panel {
+      flex: 1;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      padding: 40px;
+    }
+
+    .left-panel h1 {
+      font-size: 2.8rem;
+      margin-bottom: 10px;
+      letter-spacing: 1px;
+    }
+
+    .left-panel p {
+      font-size: 1.1rem;
+      opacity: 0.9;
+    }
+
+    .right-panel {
+      flex: 1;
+      background-color: #fff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border-top-left-radius: 40px;
+      border-bottom-left-radius: 40px;
+      box-shadow: -4px 0 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .login-box {
+      width: 80%;
+      max-width: 350px;
+    }
+
+    .login-box h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #06122d;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+    }
+
+    input {
+      padding: 12px 15px;
+      margin-bottom: 15px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 15px;
+    }
+
+    button {
+      background-color: #06122d;
+      color: white;
+      padding: 12px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    button:hover {
+      background-color: #0b1c49;
+    }
+
+    .extra-links {
+      text-align: center;
+      margin-top: 10px;
+    }
+
+    .extra-links a {
+      color: #06122d;
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .extra-links a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="left-panel">
+    <h1>Welcome to Order Manager App</h1>
+    <p>Manage your manufacturing orders easily in one place</p>
+  </div>
+
+  <div class="right-panel">
+    <div class="login-box">
+      <h2>Manufacturer Login</h2>
+      <form action="/login" method="POST">
+        <input type="email" name="email" placeholder="Enter your email" required />
+        <input type="password" name="password" placeholder="Enter your password" required />
+        <button type="submit">Login</button>
+      </form>
+
+      <div class="extra-links">
+        <p>Click Login to Proceed</p>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
