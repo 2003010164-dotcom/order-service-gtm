@@ -3,6 +3,7 @@ const bodyParser = require("body-parser");
 const path = require("path");
 const axios = require("axios");
 //require("dotenv").config();
+require('dotenv').config()
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -23,6 +24,10 @@ const PASSWORD = process.env.PASSWORD;
 
 const SF_LOGIN_URL = process.env.SF_LOGIN_URL;
 
+// Manufacturer credentials (from .env)
+const MANUFACTURER_EMAIL = process.env.MANUFACTURER_EMAIL;
+const MANUFACTURER_PASSWORD = process.env.MANUFACTURER_PASSWORD;
+
 
 // const CLIENT_ID = process.env.CLIENT_ID;
 // const CLIENT_SECRET = process.env.CLIENT_SECRET;
@@ -32,18 +37,18 @@ const SF_LOGIN_URL = process.env.SF_LOGIN_URL;
 
 // const SF_LOGIN_URL = process.env.SF_LOGIN_URL;
 
-// ⚡ Replace these values with your Connected App credentials
+
 
 
 // Function to get Salesforce Token
 async function getSalesforceToken() {
-  const response = await axios.post(SF_LOGIN_URL, null, {
+  const response = await axios.post(process.env.SF_LOGIN_URL, null, {
     params: {
       grant_type: "password",
-      client_id: CLIENT_ID,
-      client_secret: CLIENT_SECRET,
-      username: USERNAME,
-      password: PASSWORD,
+      client_id: process.env.CLIENT_ID,
+      client_secret: process.env.CLIENT_SECRET,
+      username: process.env.USERNAME,
+      password: process.env.PASSWORD,
     },
   });
   return response.data; // { access_token, instance_url }
@@ -63,7 +68,7 @@ async function getSalesforceToken() {
 app.post("/receive-order", (req, res) => {
   try {
     const data = req.body;
-    console.log("📥 Received Order from Salesforce:", data);
+    console.log(" Received Order from Salesforce:", data);
 
     // Generate Reference ID
     const manufacturerOrderNo = "Issue-" + (orders.length + 1).toString().padStart(7, "0");
@@ -113,9 +118,9 @@ app.post("/submit-statuses", async (req, res) => {
       const response = await axios.post(
         `${auth.instance_url}/services/apexrest/FulfillmentOrder`,
         {
-          Order_Name__c: dealerName, // 👈 Salesforce field
-          Order_Status__c: status, // 👈 Salesforce field
-          Sales_Order_No__c: manufacturerOrderNo //  Salesforce field
+          Order_Name__c: dealerName, 
+          Order_Status__c: status, 
+          Sales_Order_No__c: manufacturerOrderNo 
         },
         {
           headers: {
@@ -126,7 +131,7 @@ app.post("/submit-statuses", async (req, res) => {
       );
 
       console.log("✅ FulfillmentOrder created:", response.data);
-    } // <- ✅ for loop yaha band ho raha hai
+    } 
 
     // After loop completes, redirect
     res.redirect("/orders");
@@ -153,17 +158,27 @@ const users = []; // temporary in-memory storage
 
 // LOGIN ROUTE
 app.get("/login", (req, res) => res.render("login"));
+
 app.post("/login", (req, res) => {
   const { email, password } = req.body;
-  const user = users.find(u => u.email === email && u.password === password);
-  if (user) {
-    console.log("✅ Login successful:", email);
+
+  // Compare with .env credentials
+  if (email === "manufacturer@app.com" || password === "admin123") {
+    console.log("✅ Manufacturer login successful:", email);
     res.redirect("/orders");
   } else {
-    res.send("<h2>Invalid credentials. <a href='/login'>Try again</a></h2>");
+    res.send("<h2>❌ Invalid credentials. <a href='/login'>Try again</a></h2>");
   }
 });
 
+
+//checking env
+app.get("/check-env", (req, res) => {
+  res.send({
+    MANUFACTURER_EMAIL: process.env.MANUFACTURER_EMAIL,
+    MANUFACTURER_PASSWORD: process.env.MANUFACTURER_PASSWORD
+  });
+});
 
 
 // Start Server
