@@ -99,12 +99,11 @@
   <table>
     <thead>
       <tr>
-        <th>Order Number</th>
-        <th>Name</th>
-        <th>Products</th>
+        <th>Manufacturer Order No.</th>
+        <th>Salesforce Order No.</th>
+        <th>DealerName</th>
+        <th>Vehicle</th>
         <th>Status</th>
-        <th>Reference ID</th>
-        <th>Action</th>
       </tr>
     </thead>
     <tbody>
@@ -113,66 +112,35 @@
   <% } else { %>
     <% orders.forEach(order => { %>
       <tr>
-        <td><%= order.orderNumber %></td>
-        <td><%= order.orderName %></td>
-        <td><%= order.products.join(", ") %></td>
+        <td><%= order.manufacturerOrderNo %></td>
+
+        <td><%= order.salesOrderNo %></td>
+        <td><%= order.dealerName %></td>
+        <td><%= order.vehicle.join(", ") %></td>
 
         <!-- STATUS DROPDOWN -->
         <td>
           <form action="/update-status" method="POST" style="display:inline;">
             <input type="hidden" name="referenceId" value="<%= order.referenceId %>" />
             <select name="status" class="status-select">
+              <option value="Acknowledged" <%= order.status === "Acknowledged" ? "selected" : "" %>>Acknowledged</option>
               <option value="Allocated" <%= order.status === "Allocated" ? "selected" : "" %>>Allocated</option>
+              <option value="In Production" <%= order.status === "In Production" ? "selected" : "" %>>In Production</option>
+              <option value="In Paint" <%= order.status === "In Paint" ? "selected" : "" %>>In Paint</option>
+              <option value="In Voiced" <%= order.status === "In Voiced" ? "selected" : "" %>>In Voiced</option>
               <option value="In Transit" <%= order.status === "In Transit" ? "selected" : "" %>>In Transit</option>
-              <option value="Delivered" <%= order.status === "Delivered" ? "selected" : "" %>>Delivered</option>
-              <option value="Activated" <%= order.status === "Activated" ? "selected" : "" %>>Activated</option>
             </select>
           </form>
         </td>
 
-        <td><%= order.referenceId %></td>
 
-        <!-- DELETE ICON -->
-        <td>
-          <form action="/delete-order" method="POST" style="display:inline;">
-            <input type="hidden" name="referenceId" value="<%= order.referenceId %>" />
-            <button
-              type="submit"
-              title="Delete"
-              onclick="return confirm('Are you sure you want to delete this order?')">
-              🗑️
-            </button>
-          </form>
-        </td>
+       
       </tr>
     <% }) %>
   <% } %>
 </tbody>
 
-    <!-- <tbody>
-      <% if (orders.length === 0) { %>
-        <tr><td colspan="6">No Orders Found</td></tr>
-      <% } else { %>
-        <% orders.forEach(order => { %>
-          <tr>
-            <td><%= order.orderNumber %></td>
-            <td><%= order.orderName %></td>
-            <td><%= order.products.join(", ") %></td>
-            <td><%= order.status %></td>
-            <td><%= order.referenceId %></td>
-
-            <td>
-              <form action="/delete-order" method="POST" style="display:inline;">
-                <input type="hidden" name="referenceId" value="<%= order.referenceId %>" />
-                <button type="submit" title="Delete" onclick="return confirm('Are you sure you want to delete this order?')">
-                  🗑️
-                </button>
-              </form>
-            </td>
-          </tr>
-        <% }) %>
-      <% } %>
-    </tbody> -->
+    
   </table>
 
   <div style="text-align:center; margin-top:20px;">
