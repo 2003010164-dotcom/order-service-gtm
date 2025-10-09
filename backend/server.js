@@ -123,9 +123,12 @@ app.post("/submit-statuses", async (req, res) => {
     console.log("✅ Fulfillment Orders sent successfully!");
     res.redirect("/orders");
   } catch (err) {
-    console.error("❌ Error in /submit-statuses:", err.response?.data || err.message);
-    res.status(500).send("Failed to submit orders to Salesforce.");
+  console.error("❌ Error in /submit-statuses:", err.response?.data || err.message);
+  if (err.response) {
+    console.error("Salesforce Response:", err.response.status, err.response.data);
   }
+  res.status(500).send("Failed to submit orders to Salesforce.");
+}
 });
 
 
