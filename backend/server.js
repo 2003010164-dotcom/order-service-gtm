@@ -2,7 +2,7 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const path = require("path");
 const axios = require("axios");
-require("dotenv").config();
+//require("dotenv").config();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -32,10 +32,10 @@ async function getSalesforceToken() {
   const response = await axios.post(SF_LOGIN_URL, null, {
     params: {
       grant_type: "password",
-      client_id: CLIENT_ID,
-      client_secret: CLIENT_SECRET,
-      username: USERNAME,
-      password: PASSWORD,
+      client_id: process.env.CLIENT_ID,
+      client_secret:  process.env.CLIENT_SECRET,
+      username:  process.env.USERNAME,
+      password:  process.env.PASSWORD,
     },
   });
   return response.data;
