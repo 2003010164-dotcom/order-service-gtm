@@ -50,42 +50,27 @@
     }
 
     .status-select {
-  border: 1px solid #d1d5db;
-  border-radius: 5px;
-  padding: 5px 8px;
-  background-color: #f9fafb;
-  font-size: 14px;
-  color: #111827;
-  cursor: pointer;
-}
-
-.status-select:hover {
-  background-color: #eef2ff;
-}
-
-    button {
+      border: 1px solid #d1d5db;
+      border-radius: 5px;
+      padding: 5px 8px;
+      background-color: #f9fafb;
+      font-size: 14px;
+      color: #111827;
       cursor: pointer;
-      border: none;
-      background: none;
     }
 
-    button[title="Delete"] {
-      font-size: 18px;
-      color: red;
-      transition: 0.2s;
-    }
-
-    button[title="Delete"]:hover {
-      transform: scale(1.3);
+    .status-select:hover {
+      background-color: #eef2ff;
     }
 
     .submit-btn {
       background-color: #a6a8a7;
       color: white;
       border-radius: 6px;
-      padding: 6px 12px;
+      padding: 8px 15px;
       border: none;
       cursor: pointer;
+      font-size: 15px;
     }
 
     .submit-btn:hover {
@@ -101,52 +86,82 @@
       <tr>
         <th>Manufacturer Order No.</th>
         <th>Salesforce Order No.</th>
-        <th>DealerName</th>
+        <th>Dealer Name</th>
         <th>Vehicle</th>
         <th>Status</th>
       </tr>
     </thead>
     <tbody>
-  <% if (orders.length === 0) { %>
-    <tr><td colspan="6" class="no-orders">No Orders Found</td></tr>
-  <% } else { %>
-    <% orders.forEach(order => { %>
-      <tr>
-        <td><%= order.manufacturerOrderNo %></td>
-
-        <td><%= order.salesOrderNo %></td>
-        <td><%= order.dealerName %></td>
-        <td><%= order.vehicle.join(", ") %></td>
-
-        <!-- STATUS DROPDOWN -->
-        <td>
-          <form action="/update-status" method="POST" style="display:inline;">
-            <input type="hidden" name="referenceId" value="<%= order.referenceId %>" />
-            <select name="status" class="status-select">
-              <option value="Acknowledged" <%= order.status === "Acknowledged" ? "selected" : "" %>>Acknowledged</option>
-              <option value="Allocated" <%= order.status === "Allocated" ? "selected" : "" %>>Allocated</option>
-              <option value="In Production" <%= order.status === "In Production" ? "selected" : "" %>>In Production</option>
-              <option value="In Paint" <%= order.status === "In Paint" ? "selected" : "" %>>In Paint</option>
-              <option value="In Voiced" <%= order.status === "In Voiced" ? "selected" : "" %>>In Voiced</option>
-              <option value="In Transit" <%= order.status === "In Transit" ? "selected" : "" %>>In Transit</option>
-            </select>
-          </form>
-        </td>
-
-
-       
-      </tr>
-    <% }) %>
-  <% } %>
-</tbody>
-
-    
+      <% if (orders.length === 0) { %>
+        <tr><td colspan="6" class="no-orders">No Orders Found</td></tr>
+      <% } else { %>
+        <% orders.forEach(order => { %>
+          <tr>
+            <td><%= order.manufacturerOrderNo %></td>
+            <td><%= order.salesOrderNo %></td>
+            <td><%= order.dealerName %></td>
+            <td><%= order.vehicle.join(", ") %></td>
+            <td>
+              <select name="status" class="status-select">
+                <option value="Acknowledged" <%= order.status === "Acknowledged" ? "selected" : "" %>>Acknowledged</option>
+                <option value="Allocated" <%= order.status === "Allocated" ? "selected" : "" %>>Allocated</option>
+                <option value="In Production" <%= order.status === "In Production" ? "selected" : "" %>>In Production</option>
+                <option value="In Paint" <%= order.status === "In Paint" ? "selected" : "" %>>In Paint</option>
+                <option value="In Voiced" <%= order.status === "In Voiced" ? "selected" : "" %>>In Voiced</option>
+                <option value="In Transit" <%= order.status === "In Transit" ? "selected" : "" %>>In Transit</option>
+                <option value="Delivered" <%= order.status === "Delivered" ? "selected" : "" %>>Delivered</option>
+              </select>
+            </td>
+          </tr>
+        <% }) %>
+      <% } %>
+    </tbody>
   </table>
 
-  <div style="text-align:center; margin-top:20px;">
-    <form action="/submit-statuses" method="POST">
-      <button class="submit-btn" type="submit">Submit Status</button>
-    </form>
+  <div style="text-align:center; margin-top:25px;">
+    <button class="submit-btn">Submit Status</button>
   </div>
+
+  <script>
+    document.querySelector(".submit-btn").addEventListener("click", async (e) => {
+      e.preventDefault();
+
+      const rows = Array.from(document.querySelectorAll("tbody tr"));
+      const orders = rows
+        .filter(r => !r.querySelector(".no-orders"))
+        .map(row => {
+          const cells = row.querySelectorAll("td");
+          return {
+            manufacturerOrderNo: cells[0]?.innerText.trim(),
+            salesOrderNo: cells[1]?.innerText.trim(),
+            dealerName: cells[2]?.innerText.trim(),
+            status: row.querySelector(".status-select")?.value || "Acknowledged"
+          };
+        });
+
+      if (orders.length === 0) {
+        alert("No orders to submit!");
+        return;
+      }
+
+      try {
+        const response = await fetch("/submit-statuses", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ orders }),
+        });
+
+        if (response.ok) {
+          alert("✅ Orders submitted successfully!");
+          window.location.href = "/orders";
+        } else {
+          const errMsg = await response.text();
+          alert("❌ Failed to submit orders: " + errMsg);
+        }
+      } catch (err) {
+        alert(" Error sending data: " + err.message);
+      }
+    });
+  </script>
 </body>
 </html>
