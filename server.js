@@ -133,7 +133,7 @@ app.post("/submit-statuses", async (req, res) => {
       console.log("✅ FulfillmentOrder created:", response.data);
     } 
 
-    // After loop completes, redirect
+    
     res.redirect("/orders");
 
   } catch (err) {
@@ -145,15 +145,14 @@ app.post("/submit-statuses", async (req, res) => {
 
 
 
-// DELETE ORDER ROUTE
-// =====================
+
 
 
 
 
 const users = []; // temporary in-memory storage
 
-// SIGNUP ROUTE
+
 
 
 // LOGIN ROUTE
