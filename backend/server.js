@@ -95,7 +95,7 @@ app.post("/submit-statuses", async (req, res) => {
       }
     );
 
-    console.log("✅ Fulfillment Orders sent successfully!");
+    console.log(" Fulfillment Orders sent successfully!");
     res.redirect("/orders");
   } catch (err) {
     console.error("❌ Error in /submit-statuses:", err.response?.data || err.message);
@@ -107,7 +107,7 @@ app.post("/submit-statuses", async (req, res) => {
 app.get("/login", (req, res) => res.render("login"));
 app.post("/login", (req, res) => {
   const { email, password } = req.body;
-  if (email === MANUFACTURER_EMAIL && password === MANUFACTURER_PASSWORD) {
+  if (email === "manufacturer@app.com" && password === "admin123") {
     console.log("✅ Login success:", email);
     res.redirect("/orders");
   } else {
