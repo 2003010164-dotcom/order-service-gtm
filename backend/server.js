@@ -41,6 +41,12 @@ async function getSalesforceToken() {
   return response.data;
 }
 
+
+//home page route
+app.get("/", (req, res) => {
+  res.render("home"); 
+});
+
 // Receive Order from Salesforce
 app.post("/receive-order", (req, res) => {
   try {
