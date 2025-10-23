@@ -74,19 +74,19 @@ app.get("/orders", (req, res) => {
 app.post("/submit-statuses", async (req, res) => {
   try {
     const updatedOrders = req.body.orders;
-    if (!updatedOrders) {
+    if (!updatedOrders || !Array.isArray(updatedOrders)) {
       console.log("❌ No orders received in form.");
       return res.status(400).send("No orders received.");
     }
 
-    console.log("📤 Sending updated orders to Salesforce:", updatedOrders);
+    console.log("✅ Received orders:", updatedOrders);
 
     const auth = await getSalesforceToken();
     const endpoint = `${auth.instance_url}/services/apexrest/FulfillmentOrder`;
 
     await axios.post(
       endpoint,
-      { orders: updatedOrders }, // structure Salesforce expects
+      { orders: updatedOrders },
       {
         headers: {
           Authorization: `Bearer ${auth.access_token}`,
@@ -96,10 +96,13 @@ app.post("/submit-statuses", async (req, res) => {
     );
 
     console.log("✅ Fulfillment Orders sent successfully!");
-    res.redirect("/orders");
+    res.status(200).send("Orders sent");
   } catch (err) {
-    console.error("❌ Error in /submit-statuses:", err.response?.data || err.message);
-    res.status(500).send("Failed to submit orders to Salesforce.");
+    console.error("❌ Error in /submit-statuses:", err.message);
+    if (err.response) {
+      console.error("Salesforce Response:", err.response.data);
+    }
+    res.status(500).send("Failed to submit orders: " + (err.response?.data?.message || err.message));
   }
 });
 
