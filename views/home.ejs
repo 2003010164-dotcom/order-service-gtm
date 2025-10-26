@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Manufacturer Order Management</title>
+  <style>
+    body {
+      font-family: "Segoe UI", Arial, sans-serif;
+      background: linear-gradient(120deg, #0f172a, #1e293b);
+      color: white;
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(255, 255, 255, 0.05);
+      padding: 15px 30px;
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .logo {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: #ffffff;
+      letter-spacing: 1px;
+    }
+
+    .login-btn {
+      background-color: #2563eb;
+      color: white;
+      border: none;
+      padding: 8px 18px;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease-in-out;
+    }
+
+    .login-btn:hover {
+      background-color: #1d4ed8;
+      transform: scale(1.05);
+    }
+
+    .main-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 40px;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      margin-bottom: 10px;
+    }
+
+    p {
+      font-size: 1.1rem;
+      color: #cbd5e1;
+      max-width: 600px;
+      line-height: 1.5;
+    }
+
+    .footer {
+      text-align: center;
+      padding: 10px;
+      font-size: 13px;
+      color: #9ca3af;
+      background: rgba(255, 255, 255, 0.05);
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    @media (max-width: 600px) {
+      h1 {
+        font-size: 1.8rem;
+      }
+      p {
+        font-size: 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo"> Manufacturer App</div>
+    <form action="/login" method="GET">
+      <button class="login-btn" type="submit">Login</button>
+    </form>
+  </header>
+
+  <div class="main-content">
+    <img src="orderImage.jpg" alt="" >
+    <h1>Welcome to Manufacturer Order Portal</h1>
+    <p>
+      Manage and track your vehicle manufacturing orders efficiently.
+      Update order statuses, view order details, and sync data seamlessly
+      with Salesforce.
+    </p>
+  </div>
+
+  <div class="footer">
+    © 2025 Manufacturer App — All Rights Reserved
+  </div>
+</body>
+</html>
