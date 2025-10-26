@@ -77,6 +77,11 @@
       cursor: pointer;
     }
 
+    .delivered-status {
+      color: green;
+      font-weight: bold;
+}
+
     .submit-btn:hover {
       background-color: #6c6c6c;
     }
@@ -85,7 +90,7 @@
 <body>
   <h1>Manufacturer Orders</h1>
 
-  <table id="ordersTable">
+  <table>
     <thead>
       <tr>
         <th>Manufacturer Order No.</th>
@@ -99,27 +104,32 @@
       <% if (orders.length === 0) { %>
         <tr><td colspan="6" class="no-orders">No Orders Found</td></tr>
       <% } else { %>
-        <% orders.forEach((order, index) => { %>
+        <% orders.forEach(order => { %>
           <tr>
             <td><%= order.manufacturerOrderNo %></td>
             <td><%= order.salesOrderNo %></td>
             <td><%= order.dealerName %></td>
             <td><%= order.vehicle.join(", ") %></td>
-            <td>
-              <% if (order.status === "Delivered") { %>
-                <span class="delivered-status"><%= order.status %></span>
-              <% } else { %>
-                <select class="status-select" data-index="<%= index %>">
-                  <option value="Acknowledged" <%= order.status === "Acknowledged" ? "selected" : "" %>>Acknowledged</option>
-                  <option value="Allocated" <%= order.status === "Allocated" ? "selected" : "" %>>Allocated</option>
-                  <option value="In Production" <%= order.status === "In Production" ? "selected" : "" %>>In Production</option>
-                  <option value="In Paint" <%= order.status === "In Paint" ? "selected" : "" %>>In Paint</option>
-                  <option value="In Voiced" <%= order.status === "In Voiced" ? "selected" : "" %>>In Voiced</option>
-                  <option value="In Transit" <%= order.status === "In Transit" ? "selected" : "" %>>In Transit</option>
-                  <option value="Delivered" <%= order.status === "Delivered" ? "selected" : "" %>>Delivered</option>
-                </select>
-              <% } %>
-            </td>
+
+            <!-- STATUS -->
+            <<td>
+  <% if (order.status === "Delivered") { %>
+    <span class="delivered-status"><%= order.status %></span>
+  <% } else { %>
+    <form action="/update-status" method="POST" style="display:inline;">
+      <input type="hidden" name="referenceId" value="<%= order.referenceId %>" />
+      <select name="status" class="status-select">
+        <option value="Acknowledged" <%= order.status === "Acknowledged" ? "selected" : "" %>>Acknowledged</option>
+        <option value="Allocated" <%= order.status === "Allocated" ? "selected" : "" %>>Allocated</option>
+        <option value="In Production" <%= order.status === "In Production" ? "selected" : "" %>>In Production</option>
+        <option value="In Paint" <%= order.status === "In Paint" ? "selected" : "" %>>In Paint</option>
+        <option value="In Voiced" <%= order.status === "In Voiced" ? "selected" : "" %>>In Voiced</option>
+        <option value="In Transit" <%= order.status === "In Transit" ? "selected" : "" %>>In Transit</option>
+        <option value="Delivered" <%= order.status === "Delivered" ? "selected" : "" %>>Delivered</option>
+      </select>
+    </form>
+  <% } %>
+</td>
           </tr>
         <% }) %>
       <% } %>
@@ -127,39 +137,9 @@
   </table>
 
   <div style="text-align:center; margin-top:20px;">
-    <button class="submit-btn" id="submitStatus">Submit Status</button>
+    <form action="/submit-statuses" method="POST">
+      <button class="submit-btn" type="submit">Submit Status</button>
+    </form>
   </div>
-
-  <script>
-    document.getElementById('submitStatus').addEventListener('click', async () => {
-      const rows = document.querySelectorAll('#ordersTable tbody tr');
-      const orders = [];
-
-      rows.forEach((row, i) => {
-        const cells = row.querySelectorAll('td');
-        const statusSelect = row.querySelector('.status-select');
-        const status = statusSelect ? statusSelect.value : 'Delivered';
-        const manufacturerOrderNo = cells[0].innerText.trim();
-        const salesOrderNo = cells[1].innerText.trim();
-        const dealerName = cells[2].innerText.trim();
-        const vehicle = cells[3].innerText.trim().split(', ');
-
-        orders.push({ manufacturerOrderNo, salesOrderNo, dealerName, vehicle, status });
-      });
-
-      const response = await fetch('/submit-statuses', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ orders }),
-      });
-
-      if (response.ok) {
-        alert('✅ Orders submitted successfully!');
-        window.location.reload();
-      } else {
-        alert('❌ Failed to submit orders');
-      }
-    });
-  </script>
 </body>
 </html>
