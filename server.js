@@ -2,21 +2,20 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const path = require("path");
 const axios = require("axios");
-require("dotenv").config();
+//require("dotenv").config();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
 // Middleware
-app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 
 // In-memory order storage
 let orders = [];
 
-// Salesforce credentials
 const {
   CLIENT_ID,
   CLIENT_SECRET,
@@ -32,20 +31,32 @@ async function getSalesforceToken() {
   const response = await axios.post(SF_LOGIN_URL, null, {
     params: {
       grant_type: "password",
-      client_id: CLIENT_ID,
-      client_secret: CLIENT_SECRET,
-      username: USERNAME,
-      password: PASSWORD,
+      client_id: process.env.CLIENT_ID,
+      client_secret: process.env.CLIENT_SECRET,
+      username: process.env.USERNAME,
+      password: process.env.PASSWORD,
     },
   });
   return response.data;
 }
 
-// 1️⃣ Receive Order from Salesforce
+// 1️ Receive Order from Salesforce
+
+
+
+//Home Page
+
+app.get("/", (req, res) => {
+  res.render("home"); // Render the home.ejs file
+});
+
+
+
+
 app.post("/receive-order", (req, res) => {
   try {
     const data = req.body;
-    console.log("📥 Received Order:", data);
+    console.log(" Received Order:", data);
 
     const manufacturerOrderNo = "Issue-" + (orders.length + 1).toString().padStart(7, "0");
 
@@ -65,28 +76,51 @@ app.post("/receive-order", (req, res) => {
   }
 });
 
-// 2️⃣ Display Orders Page
+
+
+app.post("/update-order-status", (req, res) => {
+  try {
+    const { salesOrderNo, status } = req.body;
+    console.log("📦 Salesforce update received:", salesOrderNo, status);
+
+    // Find matching order in memory
+    const order = orders.find(o => o.salesOrderNo === salesOrderNo);
+    if (order) {
+      order.status = status;
+      console.log(`✅ Order ${salesOrderNo} updated to ${status}`);
+    } else {
+      console.warn(`⚠️ Order ${salesOrderNo} not found in Node memory`);
+    }
+
+    res.status(200).send({ message: "Order status updated successfully" });
+  } catch (err) {
+    console.error("❌ Error in /update-order-status:", err);
+    res.status(500).send({ error: "Failed to update order status" });
+  }
+});
+
+
 app.get("/orders", (req, res) => {
   res.render("orders", { orders });
 });
 
-// 3️⃣ Submit Updated Statuses
+//  Submit Updated Statuses
 app.post("/submit-statuses", async (req, res) => {
   try {
     const updatedOrders = req.body.orders;
-    if (!updatedOrders || !Array.isArray(updatedOrders)) {
+    if (!updatedOrders) {
       console.log("❌ No orders received in form.");
       return res.status(400).send("No orders received.");
     }
 
-    console.log("✅ Received orders:", updatedOrders);
+    console.log(" Sending updated orders to Salesforce:", updatedOrders);
 
     const auth = await getSalesforceToken();
     const endpoint = `${auth.instance_url}/services/apexrest/FulfillmentOrder`;
 
     await axios.post(
       endpoint,
-      { orders: updatedOrders },
+      { orders: updatedOrders }, 
       {
         headers: {
           Authorization: `Bearer ${auth.access_token}`,
@@ -96,21 +130,24 @@ app.post("/submit-statuses", async (req, res) => {
     );
 
     console.log("✅ Fulfillment Orders sent successfully!");
-    res.status(200).send("Orders sent");
+    res.redirect("/orders");
   } catch (err) {
-    console.error("❌ Error in /submit-statuses:", err.message);
-    if (err.response) {
-      console.error("Salesforce Response:", err.response.data);
-    }
-    res.status(500).send("Failed to submit orders: " + (err.response?.data?.message || err.message));
+  console.error(" Error in /submit-statuses:", err.message);
+  if (err.response) {
+    console.error(" Salesforce Response Code:", err.response.status);
+    console.error(" Salesforce Response Body:", JSON.stringify(err.response.data, null, 2));
+  } else {
+    console.error(" No response from Salesforce");
   }
+  res.status(500).send("Failed to submit orders to Salesforce: " + (err.response?.data?.message || err.message));
+}
 });
 
 // Login
 app.get("/login", (req, res) => res.render("login"));
 app.post("/login", (req, res) => {
   const { email, password } = req.body;
-  if (email === MANUFACTURER_EMAIL && password === MANUFACTURER_PASSWORD) {
+  if (email === "manufacturer@app.com" && password === "admin123") {
     console.log("✅ Login success:", email);
     res.redirect("/orders");
   } else {
@@ -118,4 +155,4 @@ app.post("/login", (req, res) => {
   }
 });
 
-app.listen(PORT, () => console.log(`🚀 Server running on http://localhost:${PORT}`));
+app.listen(PORT, () => console.log(` Server running on http://localhost:${PORT}`));
