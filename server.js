@@ -9,9 +9,9 @@ const PORT = process.env.PORT || 5000;
 
 // Middleware
 app.use(bodyParser.json()); // Parse JSON payloads
-app.use(express.json({ limit: '10mb' }));
-app.use(express.urlencoded({ extended: true, limit: '10mb' }));
-//app.use(bodyParser.urlencoded({ extended: true })); // Parse URL form payloads
+//app.use(express.json({ limit: '10mb' }));
+//app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+app.use(bodyParser.urlencoded({ extended: true })); // Parse URL form payloads
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 
