@@ -1,6 +1,3 @@
-This mail has been sent from an external source. Do not reply to it, or open any links/attachments unless you are sure of the sender's identity.
-
- 
 const express = require("express");
 const bodyParser = require("body-parser");
 const path = require("path");
@@ -10,16 +7,16 @@ const axios = require("axios");
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// Middleware
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.json());
+// ---------- Middleware ----------
+app.use(bodyParser.json()); // for JSON POST (from fetch)
+app.use(bodyParser.urlencoded({ extended: true })); // for regular form posts
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 
-// In-memory order storage
+// ---------- In-memory storage ----------
 let orders = [];
 
-// Salesforce credentials
+// ---------- Salesforce credentials ----------
 const {
   CLIENT_ID,
   CLIENT_SECRET,
@@ -28,7 +25,7 @@ const {
   SF_LOGIN_URL
 } = process.env;
 
-// Get Salesforce token
+// ---------- Salesforce Auth ----------
 async function getSalesforceToken() {
   const response = await axios.post(SF_LOGIN_URL, null, {
     params: {
@@ -42,7 +39,14 @@ async function getSalesforceToken() {
   return response.data;
 }
 
-// Receive Order from Salesforce
+// ---------- Routes ----------
+
+// Home
+app.get("/", (req, res) => {
+  res.render("home"); // your landing page if you have one
+});
+
+// Receive order from Salesforce
 app.post("/receive-order", (req, res) => {
   try {
     const data = req.body;
@@ -59,7 +63,7 @@ app.post("/receive-order", (req, res) => {
     };
 
     orders.push(orderObj);
-    console.log("✅ Order stored:", orderObj);
+    console.log("✅ Stored new order:", orderObj);
     res.status(200).send({ message: "Order received successfully" });
   } catch (err) {
     console.error("❌ Error in /receive-order:", err);
@@ -67,36 +71,30 @@ app.post("/receive-order", (req, res) => {
   }
 });
 
-// Show Orders page
+// Display all manufacturer orders
 app.get("/orders", (req, res) => {
   res.render("orders", { orders });
 });
 
-// ✅ Fixed submit-statuses route
+// ---------- Submit statuses ----------
 app.post("/submit-statuses", async (req, res) => {
   try {
+    console.log("🧾 Full raw request body:", JSON.stringify(req.body, null, 2));
     let updatedOrders = req.body.orders;
-    console.log("🧾 Raw body.orders:", updatedOrders);
 
-    if (typeof updatedOrders === "string") {
-      try {
-        updatedOrders = JSON.parse(updatedOrders);
-      } catch (e) {
-        console.error("⚠️ JSON parse error:", e.message);
-      }
-    }
-
-    if (!updatedOrders || updatedOrders.length === 0) {
-      console.log("❌ No orders received in form.");
+    if (!updatedOrders || !Array.isArray(updatedOrders)) {
+      console.log("❌ No valid orders array received.");
       return res.status(400).send("No orders received.");
     }
 
     console.log("🚀 Sending updated orders to Salesforce:", updatedOrders);
 
+    // Get Salesforce auth
     const auth = await getSalesforceToken();
     const endpoint = `${auth.instance_url}/services/apexrest/FulfillmentOrder`;
 
-    const sfRes = await axios.post(
+    // Post to Salesforce REST API
+    const sfResponse = await axios.post(
       endpoint,
       { orders: updatedOrders },
       {
@@ -107,7 +105,9 @@ app.post("/submit-statuses", async (req, res) => {
       }
     );
 
-    console.log("✅ Salesforce responded:", sfRes.status, sfRes.data);
+    console.log("✅ Salesforce responded:", sfResponse.status, sfResponse.data);
+
+    // Redirect back to /orders page
     res.redirect("/orders");
   } catch (err) {
     console.error("❌ Error in /submit-statuses:", err.message);
@@ -122,4 +122,17 @@ app.post("/submit-statuses", async (req, res) => {
   }
 });
 
+// ---------- Login ----------
+app.get("/login", (req, res) => res.render("login"));
+app.post("/login", (req, res) => {
+  const { email, password } = req.body;
+  if (email === "manufacturer@app.com" && password === "admin123") {
+    console.log("✅ Login success:", email);
+    res.redirect("/orders");
+  } else {
+    res.send("<h3>Invalid credentials. <a href='/login'>Try again</a></h3>");
+  }
+});
+
+// ---------- Start Server ----------
 app.listen(PORT, () => console.log(`🚀 Server running on http://localhost:${PORT}`));
