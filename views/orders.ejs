@@ -11,19 +11,57 @@
       margin: 30px;
       color: #111827;
     }
-    h1 { text-align: center; color: #06122d; font-weight: 600; margin-bottom: 25px; }
-    table {
-      width: 100%; border-collapse: collapse; margin-top: 20px;
-      background: #ffffff; border-radius: 10px; overflow: hidden;
-      box-shadow: 0 3px 6px rgba(0,0,0,0.08);
+    h1 {
+      text-align: center;
+      color: #06122d;
+      font-weight: 600;
+      margin-bottom: 25px;
     }
-    td, th { border-bottom: 1px solid #e5e7eb; padding: 10px 12px; text-align: center; font-size: 14px; }
-    th { background-color: #06122d; color: white; font-weight: 500; }
-    tr:hover { background-color: #f1f5ff; }
-    .status-select { border: 1px solid #d1d5db; border-radius: 5px; padding: 5px 8px; background-color: #f9fafb; font-size: 14px; }
-    .submit-btn { background-color: #06122d; color: white; border-radius: 6px; padding: 8px 14px; border: none; cursor: pointer; }
-    .submit-btn:hover { background-color: #111827; }
-    .delivered-status { color: green; font-weight: bold; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+      background: #ffffff;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 3px 6px rgba(0, 0, 0, 0.08);
+    }
+    td, th {
+      border-bottom: 1px solid #e5e7eb;
+      padding: 10px 12px;
+      text-align: center;
+      font-size: 14px;
+    }
+    th {
+      background-color: #06122d;
+      color: white;
+      font-weight: 500;
+    }
+    tr:hover {
+      background-color: #f1f5ff;
+    }
+    .status-select {
+      border: 1px solid #d1d5db;
+      border-radius: 5px;
+      padding: 5px 8px;
+      background-color: #f9fafb;
+      font-size: 14px;
+    }
+    .submit-btn {
+      background-color: #06122d;
+      color: white;
+      border-radius: 6px;
+      padding: 8px 14px;
+      border: none;
+      cursor: pointer;
+    }
+    .submit-btn:hover {
+      background-color: #111827;
+    }
+    .delivered-status {
+      color: green;
+      font-weight: bold;
+    }
   </style>
 </head>
 <body>
@@ -32,8 +70,8 @@
   <table>
     <thead>
       <tr>
-        <th>Manufacturer Order No</th>
-        <th>Salesforce Order No</th>
+        <th>Manufacturer Order No.</th>
+        <th>Salesforce Order No.</th>
         <th>Dealer Name</th>
         <th>Vehicle</th>
         <th>Status</th>
@@ -78,7 +116,6 @@
     const orders = <%- JSON.stringify(orders) %>;
 
     document.getElementById('submitBtn').addEventListener('click', async () => {
-      // collect updated statuses
       document.querySelectorAll('.status-select').forEach((select, i) => {
         if (orders[i]) orders[i].status = select.value;
       });
@@ -93,9 +130,8 @@
         });
 
         const text = await response.text();
-        console.log('✅ Server response:', text);
+        console.log('✅ Response:', text);
         alert('Statuses submitted successfully!');
-        window.location.reload();
       } catch (err) {
         console.error('❌ Error submitting statuses:', err);
         alert('Failed to submit orders.');
@@ -103,4 +139,3 @@
     });
   </script>
 </body>
-</html>
