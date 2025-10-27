@@ -5,15 +5,61 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Manufacturer Orders</title>
   <style>
-    body { font-family:"Segoe UI",Arial,sans-serif;background:#f6f8fa;margin:30px;color:#111827; }
-    h1 { text-align:center;color:#06122d;font-weight:600;margin-bottom:25px; }
-    table { width:100%;border-collapse:collapse;margin-top:20px;background:#ffffff;border-radius:10px;overflow:hidden;box-shadow:0 3px 6px rgba(0,0,0,0.08); }
-    td,th { border-bottom:1px solid #e5e7eb;padding:10px 12px;text-align:center;font-size:14px; }
-    th { background-color:#06122d;color:white;font-weight:500; }
-    tr:hover { background-color:#f1f5ff; }
-    .status-select { border:1px solid #d1d5db;border-radius:5px;padding:5px 8px;background-color:#f9fafb;font-size:14px; }
-    .submit-btn { background-color:#0070d2;color:white;border-radius:6px;padding:8px 16px;border:none;cursor:pointer;font-weight:600;margin-top:20px; }
-    .submit-btn:hover { background-color:#005fb2; }
+    body {
+      font-family: "Segoe UI", Arial, sans-serif;
+      background-color: #f6f8fa;
+      margin: 30px;
+      color: #111827;
+    }
+    h1 {
+      text-align: center;
+      color: #06122d;
+      font-weight: 600;
+      margin-bottom: 25px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+      background: #ffffff;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 3px 6px rgba(0,0,0,0.08);
+    }
+    td, th {
+      border-bottom: 1px solid #e5e7eb;
+      padding: 10px 12px;
+      text-align: center;
+      font-size: 14px;
+    }
+    th {
+      background-color: #06122d;
+      color: white;
+      font-weight: 500;
+    }
+    tr:hover {
+      background-color: #f1f5ff;
+    }
+    .status-select {
+      border: 1px solid #d1d5db;
+      border-radius: 5px;
+      padding: 5px 8px;
+      background-color: #f9fafb;
+      font-size: 14px;
+    }
+    .submit-btn {
+      background-color: #0070d2;
+      color: white;
+      border-radius: 6px;
+      padding: 8px 16px;
+      border: none;
+      cursor: pointer;
+      font-weight: 600;
+      margin-top: 20px;
+    }
+    .submit-btn:hover {
+      background-color: #005fb2;
+    }
   </style>
 </head>
 <body>
@@ -57,14 +103,14 @@
   </table>
 
   <div style="text-align:center;">
-    <button class="submit-btn" id="submitBtn">Submit Status</button>
+    <button id="submitBtn" class="submit-btn">Submit Status</button>
   </div>
 
   <script>
     const orders = <%- JSON.stringify(orders) %>;
 
     document.getElementById("submitBtn").addEventListener("click", async (e) => {
-      e.preventDefault(); // stop full-page reload
+      e.preventDefault(); // Stop any form reload
       const selects = document.querySelectorAll(".status-select");
 
       selects.forEach((select, i) => {
@@ -74,21 +120,25 @@
       console.log("🧠 Sending to /submit-statuses:", orders);
 
       try {
-        const res = await fetch("/submit-statuses", {
+        const response = await fetch("/submit-statuses", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ orders })
+          body: JSON.stringify({ orders }),
         });
 
-        const text = await res.text();
-        console.log("📩 Response:", text);
+        const result = await response.text();
+        console.log("📩 Server response:", result);
 
-        if (res.ok) alert("✅ Fulfillment Orders created successfully!");
-        else alert("❌ Error: " + text);
-      } catch (err) {
-        console.error("Network error:", err);
-        alert("Network error: " + err.message);
+        if (response.ok) {
+          alert("✅ Fulfillment Orders sent successfully!");
+        } else {
+          alert("❌ Error: " + result);
+        }
+      } catch (error) {
+        console.error("❌ Network error:", error);
+        alert("Network error: " + error.message);
       }
     });
   </script>
 </body>
+</html>
