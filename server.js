@@ -88,38 +88,47 @@ app.get("/orders", (req, res) => {
 // ------------------------
 app.post("/submit-statuses", async (req, res) => {
   try {
-    console.log("📥 Incoming /submit-statuses request");
-    console.log("🔍 Raw body:", JSON.stringify(req.body, null, 2));
+    console.log("📥 Received /submit-statuses");
 
+    // Handle both JSON and form-encoded bodies
     let updatedOrders = req.body.orders;
+
     if (typeof updatedOrders === "string") {
-      updatedOrders = JSON.parse(updatedOrders);
+      try {
+        updatedOrders = JSON.parse(updatedOrders);
+      } catch (err) {
+        console.log("⚠️ Orders were not valid JSON string, wrapping manually");
+        updatedOrders = [];
+      }
     }
 
-    if (!updatedOrders || !Array.isArray(updatedOrders)) {
-      console.log("❌ Invalid orders data:", req.body);
+    if (!Array.isArray(updatedOrders) || updatedOrders.length === 0) {
+      console.log("❌ No orders received in form or JSON.");
       return res.status(400).send("No orders received.");
     }
 
-    console.log("🚀 Sending updated orders to Salesforce:", updatedOrders.length);
+    console.log("🚀 Orders to send:", updatedOrders);
+
     const auth = await getSalesforceToken();
     const endpoint = `${auth.instance_url}/services/apexrest/FulfillmentOrder`;
 
-    await axios.post(
-      endpoint,
-      { orders: updatedOrders },
-      {
-        headers: {
-          Authorization: `Bearer ${auth.access_token}`,
-          "Content-Type": "application/json",
-        },
-      }
-    );
+    const payload = { orders: updatedOrders };
+    console.log("📦 Payload for Salesforce:", JSON.stringify(payload, null, 2));
 
-    console.log("✅ Orders sent successfully!");
-    res.status(200).send("Orders submitted successfully.");
+    const sfResponse = await axios.post(endpoint, payload, {
+      headers: {
+        Authorization: `Bearer ${auth.access_token}`,
+        "Content-Type": "application/json",
+      },
+    });
+
+    console.log("✅ Salesforce Response:", sfResponse.status, sfResponse.data);
+    res.status(200).send("Orders submitted successfully to Salesforce.");
   } catch (err) {
     console.error("❌ Error in /submit-statuses:", err.message);
+    if (err.response) {
+      console.error("🔻 Salesforce Response:", err.response.data);
+    }
     res.status(500).send("Failed to submit orders: " + err.message);
   }
 });
