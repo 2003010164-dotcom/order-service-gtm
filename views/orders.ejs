@@ -137,9 +137,65 @@
   </table>
 
   <div style="text-align:center; margin-top:20px;">
-    <form action="/submit-statuses" method="POST">
-      <button class="submit-btn" type="submit">Submit Status</button>
-    </form>
+    <form id="statusForm" action="/submit-statuses" method="POST">
+  <input type="hidden" name="orders" id="ordersInput" />
+
+  <table>
+    <thead>
+      <tr>
+        <th>Manufacturer Order No.</th>
+        <th>Salesforce Order No.</th>
+        <th>Dealer Name</th>
+        <th>Vehicle</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% if (orders.length === 0) { %>
+        <tr><td colspan="5">No Orders Found</td></tr>
+      <% } else { %>
+        <% orders.forEach((order, index) => { %>
+          <tr>
+            <td><%= order.manufacturerOrderNo %></td>
+            <td><%= order.salesOrderNo %></td>
+            <td><%= order.dealerName %></td>
+            <td><%= order.vehicle.join(", ") %></td>
+            <td>
+              <select class="status-select" data-index="<%= index %>">
+                <option value="Acknowledged" <%= order.status === "Acknowledged" ? "selected" : "" %>>Acknowledged</option>
+                <option value="Allocated" <%= order.status === "Allocated" ? "selected" : "" %>>Allocated</option>
+                <option value="In Production" <%= order.status === "In Production" ? "selected" : "" %>>In Production</option>
+                <option value="In Paint" <%= order.status === "In Paint" ? "selected" : "" %>>In Paint</option>
+                <option value="In Voiced" <%= order.status === "In Voiced" ? "selected" : "" %>>In Voiced</option>
+                <option value="In Transit" <%= order.status === "In Transit" ? "selected" : "" %>>In Transit</option>
+                <option value="Delivered" <%= order.status === "Delivered" ? "selected" : "" %>>Delivered</option>
+              </select>
+            </td>
+          </tr>
+        <% }) %>
+      <% } %>
+    </tbody>
+  </table>
+
+  <div style="text-align:center; margin-top:20px;">
+    <button class="submit-btn" type="submit">Submit Status</button>
+  </div>
+</form>
+
+<script>
+  const orders = <%- JSON.stringify(orders) %>;
+
+  document.getElementById('statusForm').addEventListener('submit', (e) => {
+    const selects = document.querySelectorAll('.status-select');
+    selects.forEach((select, i) => {
+      if (orders[i]) {
+        orders[i].status = select.value;
+      }
+    });
+
+    document.getElementById('ordersInput').value = JSON.stringify(orders);
+  });
+</script>
   </div>
 </body>
 </html>
