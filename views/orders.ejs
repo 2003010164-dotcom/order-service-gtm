@@ -67,9 +67,7 @@
 <body>
   <h1>Manufacturer Orders</h1>
 
-  <form id="statusForm" action="/submit-statuses" method="POST">
-    <input type="hidden" name="orders" id="ordersInput" />
-
+  <form id="statusForm">
     <table>
       <thead>
         <tr>
@@ -119,13 +117,34 @@
   <script>
     const orders = <%- JSON.stringify(orders) %>;
 
-    document.getElementById('statusForm').addEventListener('submit', () => {
+    document.getElementById('statusForm').addEventListener('submit', async (e) => {
+      e.preventDefault(); // stop normal form post
+
+      // update statuses
       const selects = document.querySelectorAll('.status-select');
       selects.forEach((select, i) => {
         if (orders[i]) orders[i].status = select.value;
       });
-      console.log("🧠 Sending orders:", orders);
-      document.getElementById('ordersInput').value = JSON.stringify(orders);
+
+      console.log("🧠 Sending orders JSON:", orders);
+
+      try {
+        const response = await fetch("/submit-statuses", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ orders })
+        });
+
+        if (response.ok) {
+          alert("✅ Statuses submitted successfully!");
+          window.location.reload();
+        } else {
+          const text = await response.text();
+          alert("❌ Submission failed: " + text);
+        }
+      } catch (err) {
+        alert("⚠️ Error: " + err.message);
+      }
     });
   </script>
 </body>
