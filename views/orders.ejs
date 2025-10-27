@@ -29,7 +29,7 @@
       box-shadow: 0 3px 6px rgba(0,0,0,0.08);
     }
 
-    td {
+    td, th {
       border-bottom: 1px solid #e5e7eb;
       padding: 10px 12px;
       text-align: center;
@@ -40,9 +40,6 @@
       background-color: #06122d;
       color: white;
       font-weight: 500;
-      padding: 12px 10px;
-      border: none;
-      text-align: center;
     }
 
     tr:hover {
@@ -59,15 +56,6 @@
       cursor: pointer;
     }
 
-    .status-select:hover {
-      background-color: #eef2ff;
-    }
-
-    .delivered-status {
-      color: green;
-      font-weight: bold;
-    }
-
     .submit-btn {
       background-color: #a6a8a7;
       color: white;
@@ -77,125 +65,80 @@
       cursor: pointer;
     }
 
+    .submit-btn:hover {
+      background-color: #6c6c6c;
+    }
+
     .delivered-status {
       color: green;
       font-weight: bold;
-}
-
-    .submit-btn:hover {
-      background-color: #6c6c6c;
     }
   </style>
 </head>
 <body>
   <h1>Manufacturer Orders</h1>
 
-  <table>
-    <thead>
-      <tr>
-        <th>Manufacturer Order No.</th>
-        <th>Salesforce Order No.</th>
-        <th>Dealer Name</th>
-        <th>Vehicle</th>
-        <th>Status</th>
-      </tr>
-    </thead>
-    <tbody>
-      <% if (orders.length === 0) { %>
-        <tr><td colspan="6" class="no-orders">No Orders Found</td></tr>
-      <% } else { %>
-        <% orders.forEach(order => { %>
-          <tr>
-            <td><%= order.manufacturerOrderNo %></td>
-            <td><%= order.salesOrderNo %></td>
-            <td><%= order.dealerName %></td>
-            <td><%= order.vehicle.join(", ") %></td>
+  <form id="statusForm" action="/submit-statuses" method="POST">
+    <input type="hidden" name="orders" id="ordersInput" />
 
-            <!-- STATUS -->
-            <<td>
-  <% if (order.status === "Delivered") { %>
-    <span class="delivered-status"><%= order.status %></span>
-  <% } else { %>
-    <form action="/update-status" method="POST" style="display:inline;">
-      <input type="hidden" name="referenceId" value="<%= order.referenceId %>" />
-      <select name="status" class="status-select">
-        <option value="Acknowledged" <%= order.status === "Acknowledged" ? "selected" : "" %>>Acknowledged</option>
-        <option value="Allocated" <%= order.status === "Allocated" ? "selected" : "" %>>Allocated</option>
-        <option value="In Production" <%= order.status === "In Production" ? "selected" : "" %>>In Production</option>
-        <option value="In Paint" <%= order.status === "In Paint" ? "selected" : "" %>>In Paint</option>
-        <option value="In Voiced" <%= order.status === "In Voiced" ? "selected" : "" %>>In Voiced</option>
-        <option value="In Transit" <%= order.status === "In Transit" ? "selected" : "" %>>In Transit</option>
-        <option value="Delivered" <%= order.status === "Delivered" ? "selected" : "" %>>Delivered</option>
-      </select>
-    </form>
-  <% } %>
-</td>
-          </tr>
-        <% }) %>
-      <% } %>
-    </tbody>
-  </table>
+    <table>
+      <thead>
+        <tr>
+          <th>Manufacturer Order No.</th>
+          <th>Salesforce Order No.</th>
+          <th>Dealer Name</th>
+          <th>Vehicle</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if (orders.length === 0) { %>
+          <tr><td colspan="5">No Orders Found</td></tr>
+        <% } else { %>
+          <% orders.forEach((order, index) => { %>
+            <tr>
+              <td><%= order.manufacturerOrderNo %></td>
+              <td><%= order.salesOrderNo %></td>
+              <td><%= order.dealerName %></td>
+              <td><%= order.vehicle.join(", ") %></td>
+              <td>
+                <% if (order.status === "Delivered") { %>
+                  <span class="delivered-status"><%= order.status %></span>
+                <% } else { %>
+                  <select class="status-select" data-index="<%= index %>">
+                    <option value="Acknowledged" <%= order.status === "Acknowledged" ? "selected" : "" %>>Acknowledged</option>
+                    <option value="Allocated" <%= order.status === "Allocated" ? "selected" : "" %>>Allocated</option>
+                    <option value="In Production" <%= order.status === "In Production" ? "selected" : "" %>>In Production</option>
+                    <option value="In Paint" <%= order.status === "In Paint" ? "selected" : "" %>>In Paint</option>
+                    <option value="In Voiced" <%= order.status === "In Voiced" ? "selected" : "" %>>In Voiced</option>
+                    <option value="In Transit" <%= order.status === "In Transit" ? "selected" : "" %>>In Transit</option>
+                    <option value="Delivered" <%= order.status === "Delivered" ? "selected" : "" %>>Delivered</option>
+                  </select>
+                <% } %>
+              </td>
+            </tr>
+          <% }) %>
+        <% } %>
+      </tbody>
+    </table>
 
-  <div style="text-align:center; margin-top:20px;">
-    <form id="statusForm" action="/submit-statuses" method="POST">
-  <input type="hidden" name="orders" id="ordersInput" />
+    <div style="text-align:center; margin-top:20px;">
+      <button class="submit-btn" type="submit">Submit Status</button>
+    </div>
+  </form>
 
-  <table>
-    <thead>
-      <tr>
-        <th>Manufacturer Order No.</th>
-        <th>Salesforce Order No.</th>
-        <th>Dealer Name</th>
-        <th>Vehicle</th>
-        <th>Status</th>
-      </tr>
-    </thead>
-    <tbody>
-      <% if (orders.length === 0) { %>
-        <tr><td colspan="5">No Orders Found</td></tr>
-      <% } else { %>
-        <% orders.forEach((order, index) => { %>
-          <tr>
-            <td><%= order.manufacturerOrderNo %></td>
-            <td><%= order.salesOrderNo %></td>
-            <td><%= order.dealerName %></td>
-            <td><%= order.vehicle.join(", ") %></td>
-            <td>
-              <select class="status-select" data-index="<%= index %>">
-                <option value="Acknowledged" <%= order.status === "Acknowledged" ? "selected" : "" %>>Acknowledged</option>
-                <option value="Allocated" <%= order.status === "Allocated" ? "selected" : "" %>>Allocated</option>
-                <option value="In Production" <%= order.status === "In Production" ? "selected" : "" %>>In Production</option>
-                <option value="In Paint" <%= order.status === "In Paint" ? "selected" : "" %>>In Paint</option>
-                <option value="In Voiced" <%= order.status === "In Voiced" ? "selected" : "" %>>In Voiced</option>
-                <option value="In Transit" <%= order.status === "In Transit" ? "selected" : "" %>>In Transit</option>
-                <option value="Delivered" <%= order.status === "Delivered" ? "selected" : "" %>>Delivered</option>
-              </select>
-            </td>
-          </tr>
-        <% }) %>
-      <% } %>
-    </tbody>
-  </table>
+  <script>
+    const orders = <%- JSON.stringify(orders) %>;
 
-  <div style="text-align:center; margin-top:20px;">
-    <button class="submit-btn" type="submit">Submit Status</button>
-  </div>
-</form>
-
-<script>
-  const orders = <%- JSON.stringify(orders) %>;
-
-  document.getElementById('statusForm').addEventListener('submit', (e) => {
-    const selects = document.querySelectorAll('.status-select');
-    selects.forEach((select, i) => {
-      if (orders[i]) {
-        orders[i].status = select.value;
-      }
+    document.getElementById('statusForm').addEventListener('submit', () => {
+      const selects = document.querySelectorAll('.status-select');
+      selects.forEach((select, i) => {
+        if (orders[i]) {
+          orders[i].status = select.value;
+        }
+      });
+      document.getElementById('ordersInput').value = JSON.stringify(orders);
     });
-
-    document.getElementById('ordersInput').value = JSON.stringify(orders);
-  });
-</script>
-  </div>
+  </script>
 </body>
 </html>
