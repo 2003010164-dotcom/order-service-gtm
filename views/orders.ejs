@@ -11,12 +11,14 @@
       margin: 30px;
       color: #111827;
     }
+
     h1 {
       text-align: center;
       color: #06122d;
       font-weight: 600;
       margin-bottom: 25px;
     }
+
     table {
       width: 100%;
       border-collapse: collapse;
@@ -24,43 +26,62 @@
       background: #ffffff;
       border-radius: 10px;
       overflow: hidden;
-      box-shadow: 0 3px 6px rgba(0, 0, 0, 0.08);
+      box-shadow: 0 3px 6px rgba(0,0,0,0.08);
     }
+
     td, th {
       border-bottom: 1px solid #e5e7eb;
       padding: 10px 12px;
       text-align: center;
       font-size: 14px;
     }
+
     th {
       background-color: #06122d;
       color: white;
       font-weight: 500;
     }
+
     tr:hover {
       background-color: #f1f5ff;
     }
+
     .status-select {
       border: 1px solid #d1d5db;
       border-radius: 5px;
       padding: 5px 8px;
       background-color: #f9fafb;
       font-size: 14px;
-    }
-    .submit-btn {
-      background-color: #06122d;
-      color: white;
-      border-radius: 6px;
-      padding: 8px 14px;
-      border: none;
+      color: #111827;
       cursor: pointer;
     }
-    .submit-btn:hover {
-      background-color: #111827;
+
+    .status-select:hover {
+      background-color: #eef2ff;
     }
+
     .delivered-status {
       color: green;
       font-weight: bold;
+    }
+
+    .submit-btn {
+      background-color: #a6a8a7;
+      color: white;
+      border-radius: 6px;
+      padding: 8px 16px;
+      border: none;
+      cursor: pointer;
+      font-size: 15px;
+      margin-top: 20px;
+    }
+
+    .submit-btn:hover {
+      background-color: #6c6c6c;
+    }
+
+    .center {
+      text-align: center;
     }
   </style>
 </head>
@@ -79,7 +100,7 @@
     </thead>
     <tbody>
       <% if (orders.length === 0) { %>
-        <tr><td colspan="5">No Orders Found</td></tr>
+        <tr><td colspan="5" class="center">No Orders Found</td></tr>
       <% } else { %>
         <% orders.forEach((order, index) => { %>
           <tr>
@@ -108,19 +129,20 @@
     </tbody>
   </table>
 
-  <div style="text-align:center; margin-top:20px;">
-    <button class="submit-btn" id="submitBtn">Submit Status</button>
+  <div class="center">
+    <button id="submitBtn" class="submit-btn">Submit Status</button>
   </div>
 
   <script>
     const orders = <%- JSON.stringify(orders) %>;
 
     document.getElementById('submitBtn').addEventListener('click', async () => {
+      // Update status values from dropdowns
       document.querySelectorAll('.status-select').forEach((select, i) => {
         if (orders[i]) orders[i].status = select.value;
       });
 
-      console.log('🧠 Sending updated orders:', orders);
+      console.log('🧠 Sending orders:', orders);
 
       try {
         const response = await fetch('/submit-statuses', {
@@ -130,12 +152,15 @@
         });
 
         const text = await response.text();
-        console.log('✅ Response:', text);
-        alert('Statuses submitted successfully!');
+        console.log('✅ Response from server:', text);
+
+        alert('✅ Statuses submitted successfully!');
+        window.location.reload();
       } catch (err) {
-        console.error('❌ Error submitting statuses:', err);
-        alert('Failed to submit orders.');
+        console.error('❌ Error submitting:', err);
+        alert('❌ Failed to submit statuses.');
       }
     });
   </script>
 </body>
+</html>
