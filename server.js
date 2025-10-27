@@ -1,4 +1,6 @@
 const express = require("express");
+app.use(express.json());
+app.use(express.urlencoded({extended: true}));
 const bodyParser = require("body-parser");
 const path = require("path");
 const axios = require("axios");
@@ -105,96 +107,135 @@ app.get("/orders", (req, res) => {
 });
 
 // Submit Updated Statuses -> POST to Salesforce Apex
-app.post("/submit-statuses", async (req, res) => {
+// app.post("/submit-statuses", async (req, res) => {
+//   try {
+//     // req.body could be:
+//     // - an object { orders: [...] } when sent as JSON
+//     // - a form-encoded string where orders is a JSON string
+//     console.log("➡️ /submit-statuses incoming headers:", req.headers['content-type']);
+//     console.log("➡️ /submit-statuses raw body:", typeof req.body === 'object' ? JSON.stringify(req.body) : String(req.body));
+
+//     let updatedOrders = null;
+
+//     // if body already has parsed orders array
+//     if (req.body && req.body.orders) {
+//       updatedOrders = req.body.orders;
+//       // If orders comes as a stringified JSON, parse it
+//       if (typeof updatedOrders === 'string') {
+//         try {
+//           updatedOrders = JSON.parse(updatedOrders);
+//         } catch (parseErr) {
+//           console.warn("⚠️ Could not parse stringified orders:", parseErr.message);
+//         }
+//       }
+//     } else {
+//       // Some clients might send the entire body as JSON string in raw text
+//       if (typeof req.body === 'string') {
+//         try {
+//           const parsed = JSON.parse(req.body);
+//           updatedOrders = parsed.orders || parsed;
+//         } catch (e) {
+//           // ignore
+//         }
+//       } else if (req.body && Object.keys(req.body).length === 0) {
+//         // empty body
+//       } else if (req.body) {
+//         // Maybe the client sent orders under another key, try finding
+//         for (const key of Object.keys(req.body)) {
+//           try {
+//             const maybe = typeof req.body[key] === 'string' ? JSON.parse(req.body[key]) : req.body[key];
+//             if (Array.isArray(maybe)) {
+//               updatedOrders = maybe;
+//               break;
+//             } else if (maybe && Array.isArray(maybe.orders)) {
+//               updatedOrders = maybe.orders;
+//               break;
+//             }
+//           } catch (e) {
+//             // ignore
+//           }
+//         }
+//       }
+//     }
+
+//     if (!updatedOrders || !Array.isArray(updatedOrders) || updatedOrders.length === 0) {
+//       console.log("❌ No orders received in form.");
+//       return res.status(400).send({ message: "No orders received." });
+//     }
+
+//     console.log("📤 Sending updated orders to Salesforce (count=" + updatedOrders.length + "):", JSON.stringify(updatedOrders, null, 2));
+
+//     const auth = await getSalesforceToken();
+//     const endpoint = `${auth.instance_url}/services/apexrest/FulfillmentOrder`;
+
+//     const sfResp = await axios.post(
+//       endpoint,
+//       { orders: updatedOrders },
+//       {
+//         headers: {
+//           Authorization: `Bearer ${auth.access_token}`,
+//           "Content-Type": "application/json",
+//         },
+//         timeout: 20000
+//       }
+//     );
+
+//     console.log("✅ Fulfillment Orders sent successfully! Salesforce response status:", sfResp.status);
+//     // optional: update in-memory orders' statuses to latest (so UI shows updated)
+//     updatedOrders.forEach(u => {
+//       const found = orders.find(o => o.manufacturerOrderNo === u.manufacturerOrderNo || o.salesOrderNo === u.salesOrderNo);
+//       if (found && u.status) found.status = u.status;
+//     });
+
+//     res.status(200).send({ message: "Fulfillment Orders created/updated", salesforceResponse: sfResp.data });
+//   } catch (err) {
+//     console.error("❌ Error in /submit-statuses:", err.message);
+//     if (err.response) {
+//       console.error("Salesforce response code:", err.response.status);
+//       console.error("Salesforce response body:", JSON.stringify(err.response.data, null, 2));
+//       res.status(err.response.status).send({ message: "Salesforce error", details: err.response.data });
+//     } else {
+//       res.status(500).send({ message: "Internal server error", error: err.message });
+//     }
+//   }
+// });
+
+
+ 
+app.post('/submit-statuses', async (req, res) => {
+  console.log("📥 /submit-statuses called");
+  console.log("➡️ Headers:", req.headers);
+  console.log("➡️ Raw body:", req.body);
+
   try {
-    // req.body could be:
-    // - an object { orders: [...] } when sent as JSON
-    // - a form-encoded string where orders is a JSON string
-    console.log("➡️ /submit-statuses incoming headers:", req.headers['content-type']);
-    console.log("➡️ /submit-statuses raw body:", typeof req.body === 'object' ? JSON.stringify(req.body) : String(req.body));
-
-    let updatedOrders = null;
-
-    // if body already has parsed orders array
-    if (req.body && req.body.orders) {
-      updatedOrders = req.body.orders;
-      // If orders comes as a stringified JSON, parse it
-      if (typeof updatedOrders === 'string') {
-        try {
-          updatedOrders = JSON.parse(updatedOrders);
-        } catch (parseErr) {
-          console.warn("⚠️ Could not parse stringified orders:", parseErr.message);
-        }
-      }
-    } else {
-      // Some clients might send the entire body as JSON string in raw text
-      if (typeof req.body === 'string') {
-        try {
-          const parsed = JSON.parse(req.body);
-          updatedOrders = parsed.orders || parsed;
-        } catch (e) {
-          // ignore
-        }
-      } else if (req.body && Object.keys(req.body).length === 0) {
-        // empty body
-      } else if (req.body) {
-        // Maybe the client sent orders under another key, try finding
-        for (const key of Object.keys(req.body)) {
-          try {
-            const maybe = typeof req.body[key] === 'string' ? JSON.parse(req.body[key]) : req.body[key];
-            if (Array.isArray(maybe)) {
-              updatedOrders = maybe;
-              break;
-            } else if (maybe && Array.isArray(maybe.orders)) {
-              updatedOrders = maybe.orders;
-              break;
-            }
-          } catch (e) {
-            // ignore
-          }
-        }
-      }
+    if (!req.body || !req.body.orders || !Array.isArray(req.body.orders)) {
+      console.log("❌ No valid 'orders' array in request body");
+      return res.status(400).send("No orders received in form.");
     }
 
-    if (!updatedOrders || !Array.isArray(updatedOrders) || updatedOrders.length === 0) {
-      console.log("❌ No orders received in form.");
-      return res.status(400).send({ message: "No orders received." });
-    }
+    const orders = req.body.orders;
+    console.log("✅ Parsed Orders:", JSON.stringify(orders, null, 2));
 
-    console.log("📤 Sending updated orders to Salesforce (count=" + updatedOrders.length + "):", JSON.stringify(updatedOrders, null, 2));
-
-    const auth = await getSalesforceToken();
-    const endpoint = `${auth.instance_url}/services/apexrest/FulfillmentOrder`;
-
-    const sfResp = await axios.post(
-      endpoint,
-      { orders: updatedOrders },
+    // Salesforce call
+    const sfResponse = await fetch(
+      "https://yourInstance.salesforce.com/services/apexrest/FulfillmentOrder",
       {
+        method: "POST",
         headers: {
-          Authorization: `Bearer ${auth.access_token}`,
           "Content-Type": "application/json",
+          Authorization: `Bearer ${process.env.SF_ACCESS_TOKEN}`,
         },
-        timeout: 20000
+        body: JSON.stringify({ orders }),
       }
     );
 
-    console.log("✅ Fulfillment Orders sent successfully! Salesforce response status:", sfResp.status);
-    // optional: update in-memory orders' statuses to latest (so UI shows updated)
-    updatedOrders.forEach(u => {
-      const found = orders.find(o => o.manufacturerOrderNo === u.manufacturerOrderNo || o.salesOrderNo === u.salesOrderNo);
-      if (found && u.status) found.status = u.status;
-    });
+    const text = await sfResponse.text();
+    console.log("📤 Salesforce response:", text);
 
-    res.status(200).send({ message: "Fulfillment Orders created/updated", salesforceResponse: sfResp.data });
+    res.status(200).send("✅ Fulfillment Orders created successfully!");
   } catch (err) {
-    console.error("❌ Error in /submit-statuses:", err.message);
-    if (err.response) {
-      console.error("Salesforce response code:", err.response.status);
-      console.error("Salesforce response body:", JSON.stringify(err.response.data, null, 2));
-      res.status(err.response.status).send({ message: "Salesforce error", details: err.response.data });
-    } else {
-      res.status(500).send({ message: "Internal server error", error: err.message });
-    }
+    console.error("❌ Error in /submit-statuses:", err);
+    res.status(500).send("Error: " + err.message);
   }
 });
 
