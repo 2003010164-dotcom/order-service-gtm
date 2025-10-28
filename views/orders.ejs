@@ -11,20 +11,86 @@
       margin: 30px;
       color: #111827;
     }
-    h1 { text-align:center; color:#06122d; font-weight:600; margin-bottom:25px; }
+
+    h1 {
+      text-align: center;
+      color: #06122d;
+      font-weight: 600;
+      margin-bottom: 25px;
+    }
+
     table {
-      width:100%; border-collapse:collapse; margin-top:20px; background:#fff;
-      border-radius:10px; overflow:hidden; box-shadow:0 3px 6px rgba(0,0,0,0.08);
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+      background: #ffffff;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 3px 6px rgba(0,0,0,0.08);
     }
-    td,th { border-bottom:1px solid #e5e7eb; padding:10px 12px; text-align:center; font-size:14px; }
-    th { background-color:#06122d; color:white; font-weight:500; }
-    tr:hover { background-color:#f1f5ff; }
-    .status-select { border:1px solid #d1d5db; border-radius:5px; padding:5px 8px; background:#f9fafb; font-size:14px; }
+
+    td {
+      border-bottom: 1px solid #e5e7eb;
+      padding: 10px 12px;
+      text-align: center;
+      font-size: 14px;
+    }
+
+    th {
+      background-color: #06122d;
+      color: white;
+      font-weight: 500;
+      padding: 12px 10px;
+      border: none;
+      text-align: center;
+    }
+
+    tr:hover {
+      background-color: #f1f5ff;
+    }
+
+    .status-select {
+  border: 1px solid #d1d5db;
+  border-radius: 5px;
+  padding: 5px 8px;
+  background-color: #f9fafb;
+  font-size: 14px;
+  color: #111827;
+  cursor: pointer;
+}
+
+.status-select:hover {
+  background-color: #eef2ff;
+}
+
+    button {
+      cursor: pointer;
+      border: none;
+      background: none;
+    }
+
+    button[title="Delete"] {
+      font-size: 18px;
+      color: red;
+      transition: 0.2s;
+    }
+
+    button[title="Delete"]:hover {
+      transform: scale(1.3);
+    }
+
     .submit-btn {
-      background-color:#0070d2; color:white; border-radius:6px;
-      padding:8px 16px; border:none; cursor:pointer; font-weight:600; margin-top:20px;
+      background-color: #a6a8a7;
+      color: white;
+      border-radius: 6px;
+      padding: 6px 12px;
+      border: none;
+      cursor: pointer;
     }
-    .submit-btn:hover { background-color:#005fb2; }
+
+    .submit-btn:hover {
+      background-color: #6c6c6c;
+    }
   </style>
 </head>
 <body>
@@ -33,69 +99,84 @@
   <table>
     <thead>
       <tr>
-        <th>Manufacturer Order No.</th>
-        <th>Salesforce Order No.</th>
-        <th>Dealer Name</th>
-        <th>Vehicle</th>
+        <th>Order Number</th>
+        <th>Name</th>
+        <th>Products</th>
         <th>Status</th>
+        <th>Reference ID</th>
+        <th>Action</th>
       </tr>
     </thead>
     <tbody>
+  <% if (orders.length === 0) { %>
+    <tr><td colspan="6" class="no-orders">No Orders Found</td></tr>
+  <% } else { %>
+    <% orders.forEach(order => { %>
+      <tr>
+        <td><%= order.orderNumber %></td>
+        <td><%= order.orderName %></td>
+        <td><%= order.products.join(", ") %></td>
+
+        <td>
+          <form action="/update-status" method="POST" style="display:inline;">
+            <input type="hidden" name="referenceId" value="<%= order.referenceId %>" />
+            <select name="status" class="status-select">
+              <option value="Allocated" <%= order.status === "Allocated" ? "selected" : "" %>>Allocated</option>
+              <option value="In Transit" <%= order.status === "In Transit" ? "selected" : "" %>>In Transit</option>
+              <option value="Delivered" <%= order.status === "Delivered" ? "selected" : "" %>>Delivered</option>
+              <option value="Activated" <%= order.status === "Activated" ? "selected" : "" %>>Activated</option>
+            </select>
+          </form>
+        </td>
+
+        <td><%= order.referenceId %></td>
+
+        <td>
+          <form action="/delete-order" method="POST" style="display:inline;">
+            <input type="hidden" name="referenceId" value="<%= order.referenceId %>" />
+            <button
+              type="submit"
+              title="Delete"
+              onclick="return confirm('Are you sure you want to delete this order?')">
+              🗑️
+            </button>
+          </form>
+        </td>
+      </tr>
+    <% }) %>
+  <% } %>
+</tbody> 
+
+    <tbody>
       <% if (orders.length === 0) { %>
-        <tr><td colspan="5">No Orders Found</td></tr>
+        <tr><td colspan="6">No Orders Found</td></tr>
       <% } else { %>
-        <% orders.forEach((order, index) => { %>
+        <% orders.forEach(order => { %>
           <tr>
-            <td><%= order.manufacturerOrderNo %></td>
-            <td><%= order.salesOrderNo %></td>
-            <td><%= order.dealerName %></td>
-            <td><%= order.vehicle.join(", ") %></td>
+            <td><%= order.orderNumber %></td>
+            <td><%= order.orderName %></td>
+            <td><%= order.products.join(", ") %></td>
+            <td><%= order.status %></td>
+            <td><%= order.referenceId %></td>
+
             <td>
-              <select class="status-select" data-index="<%= index %>">
-                <option value="Acknowledged" <%= order.status === "Acknowledged" ? "selected" : "" %>>Acknowledged</option>
-                <option value="Allocated" <%= order.status === "Allocated" ? "selected" : "" %>>Allocated</option>
-                <option value="In Production" <%= order.status === "In Production" ? "selected" : "" %>>In Production</option>
-                <option value="In Paint" <%= order.status === "In Paint" ? "selected" : "" %>>In Paint</option>
-                <option value="In Voiced" <%= order.status === "In Voiced" ? "selected" : "" %>>In Voiced</option>
-                <option value="In Transit" <%= order.status === "In Transit" ? "selected" : "" %>>In Transit</option>
-                <option value="Delivered" <%= order.status === "Delivered" ? "selected" : "" %>>Delivered</option>
-              </select>
+              <form action="/delete-order" method="POST" style="display:inline;">
+                <input type="hidden" name="referenceId" value="<%= order.referenceId %>" />
+                <button type="submit" title="Delete" onclick="return confirm('Are you sure you want to delete this order?')">
+                  🗑️
+                </button>
+              </form>
             </td>
           </tr>
         <% }) %>
       <% } %>
-    </tbody>
+    </tbody> 
   </table>
 
-  <div style="text-align:center;">
-    <button id="submitBtn" class="submit-btn">Submit Status</button>
+  <div style="text-align:center; margin-top:20px;">
+    <form action="/submit-statuses" method="POST">
+      <button class="submit-btn" type="submit">Submit Status</button>
+    </form>
   </div>
-
-  <script>
-    const orders = <%- JSON.stringify(orders) %>;
-    const submitBtn = document.getElementById("submitBtn");
-
-    submitBtn.addEventListener("click", async (event) => {
-      event.preventDefault();
-      const selects = document.querySelectorAll(".status-select");
-      selects.forEach((select, i) => {
-        if (orders[i]) orders[i].status = select.value;
-      });
-
-      console.log("🧠 Sending to /submit-statuses:", orders);
-
-      const response = await fetch("/submit-statuses", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ orders })
-      });
-
-      const text = await response.text();
-      console.log("📩 Server response:", text);
-
-      if (response.ok) alert("✅ Fulfillment Orders sent successfully!");
-      else alert("❌ Error: " + text);
-    });
-  </script>
 </body>
 </html>
