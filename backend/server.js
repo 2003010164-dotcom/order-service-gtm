@@ -7,8 +7,8 @@ const axios = require("axios");
 const app = express();
 const PORT = process.env.PORT || 5000;
  
-app.use(bodyParser.json({ limit: '2mb' }));
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.json({ limit: '2mb' }));
+app.use(express.urlencoded({ extended: true }));
 app.use((req, res, next) => {
   res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
@@ -102,9 +102,13 @@ app.get("/orders", (req, res) => {
  
 app.post("/submit-statuses", async (req, res) => {
   try {
+      console.log(" Received at /submit-statuses");
+      console.log("Headers:", req.headers);
+      console.log("Body:", JSON.stringify(req.body, null, 2));
    
-    console.log(" /submit-statuses incoming headers:", req.headers['content-type']);
-    console.log(" /submit-statuses raw body:", typeof req.body === 'object' ? JSON.stringify(req.body) : String(req.body));
+    //console.log(" /submit-statuses incoming headers:", req.headers['content-type']);
+    //console.log(" /submit-statuses raw body:", typeof req.body === 'object' ? JSON.stringify(req.body) : String(req.body));
+   
  
     let updatedOrders = null;
  
