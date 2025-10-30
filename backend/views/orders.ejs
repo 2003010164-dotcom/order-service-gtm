@@ -57,8 +57,9 @@
   </table>
  
   <div style="text-align:center;">
-    <button class="submit-btn" id="submitBtn">Submit Status</button>
-  </div>
+  <button class="submit-btn" id="submitBtn">Submit Status</button>
+  <button class="submit-btn" id="deliveryBtn" style="margin-left:10px;">Delivery Duration</button>
+</div>
  
   <script>
     const orders = <%- JSON.stringify(orders) %>;
@@ -90,5 +91,10 @@
         alert("Network error: " + err.message);
       }
     });
+
+// Redirect to Delivery Duration page
+document.getElementById("deliveryBtn").addEventListener("click", () => {
+  window.location.href = "/delivery-duration";
+});
   </script>
 </body>
