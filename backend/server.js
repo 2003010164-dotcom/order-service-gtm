@@ -22,6 +22,29 @@ app.set("views", path.join(__dirname, "views"));
  
 // In-memory order storage
 let orders = [];
+
+let deliveryVehicles = [
+  { brand: "Jeep", model: "Compass", variant: "Limited", status: "Allocated", duration: "45 Days" },
+  { brand: "Jeep", model: "Compass", variant: "Sport", status: "In Production", duration: "30 Days" },
+  { brand: "Jeep", model: "Wrangler", variant: "Rubicon", status: "In Transit", duration: "15 Days" },
+  { brand: "Jeep", model: "Wrangler", variant: "Sport", status: "Acknowledged", duration: "60 Days" },
+  { brand: "Jeep", model: "Renegade", variant: "Base", status: "Allocated", duration: "50 Days" },
+  { brand: "Jeep", model: "Renegade", variant: "Premium", status: "In Paint", duration: "20 Days" },
+  { brand: "Chrysler", model: "Pacifica", variant: "Limited", status: "Delivered", duration: "5 Days" },
+  { brand: "Chrysler", model: "Pacifica", variant: "Base", status: "In Production", duration: "28 Days" },
+  { brand: "Chrysler", model: "300", variant: "Premium", status: "Allocated", duration: "55 Days" },
+  { brand: "Chrysler", model: "300", variant: "Sport", status: "In Transit", duration: "18 Days" },
+  { brand: "Fiat", model: "Tipo", variant: "Base", status: "In Paint", duration: "22 Days" },
+  { brand: "Fiat", model: "Tipo", variant: "Premium", status: "Acknowledged", duration: "70 Days" },
+  { brand: "Fiat", model: "500X", variant: "Sport", status: "In Production", duration: "32 Days" },
+  { brand: "Fiat", model: "500X", variant: "Base", status: "Allocated", duration: "48 Days" },
+  { brand: "Fiat", model: "500X", variant: "Limited", status: "Delivered", duration: "3 Days" },
+  { brand: "Jeep", model: "Compass", variant: "Premium", status: "In Production", duration: "35 Days" },
+  { brand: "Jeep", model: "Wrangler", variant: "Limited", status: "Acknowledged", duration: "65 Days" },
+  { brand: "Chrysler", model: "300", variant: "Base", status: "In Voiced", duration: "12 Days" },
+  { brand: "Chrysler", model: "Pacifica", variant: "Premium", status: "Allocated", duration: "40 Days" },
+  { brand: "Fiat", model: "Tipo", variant: "Sport", status: "In Transit", duration: "10 Days" }
+];
  
 const {
   CLIENT_ID,
