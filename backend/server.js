@@ -198,5 +198,9 @@ app.post("/login", (req, res) => {
     res.send("<h3>Invalid credentials. <a href='/login'>Try again</a></h3>");
   }
 });
- 
+
+
+app.get("/delivery-duration", (req,res)=>{
+ res.render("deliveryDuration", {deliveryVehicles});
+});
 app.listen(PORT, () => console.log(` Server running on http://localhost:${PORT}`));
