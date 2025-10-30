@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Delivery Duration</title>
+  <style>
+    body { font-family:"Segoe UI",Arial,sans-serif;background:#f6f8fa;margin:30px;color:#111827; }
+    h1 { text-align:center;color:#06122d;font-weight:600;margin-bottom:25px; }
+    table { width:100%;border-collapse:collapse;margin-top:20px;background:#ffffff;border-radius:10px;overflow:hidden;box-shadow:0 3px 6px rgba(0,0,0,0.08); }
+    td,th { border-bottom:1px solid #e5e7eb;padding:10px 12px;text-align:center;font-size:14px; }
+    th { background-color:#06122d;color:white;font-weight:500; }
+    tr:hover { background:#f1f5ff; }
+    .back-btn { display:block;margin-top:20px;padding:8px 16px;background:#0070d2;color:white;border:none;border-radius:6px;text-align:center;width:150px;cursor:pointer; }
+    .back-btn:hover { background:#005fb2; }
+  </style>
+</head>
+<body>
+
+<h1>Delivery Duration</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>Brand</th>
+      <th>Model</th>
+      <th>Variant</th>
+      <th>Status</th>
+      <th>Delivery Duration</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% deliveryVehicles.forEach(v => { %>
+      <tr>
+        <td><%= v.brand %></td>
+        <td><%= v.model %></td>
+        <td><%= v.variant %></td>
+        <td><%= v.status %></td>
+        <td><%= v.duration %></td>
+      </tr>
+    <% }) %>
+  </tbody>
+</table>
+
+<div style="text-align:center;">
+  <a href="/orders"><button class="back-btn">⬅ Back to Orders</button></a>
+</div>
+
+</body>
+</html>
