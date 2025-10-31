@@ -25,14 +25,14 @@ let orders = [];
 
 let deliveryVehicles = [
   { brand: "Jeep", model: "Compass", variant: "Limited", status: "Allocated", duration: "45 Days" },
-  { brand: "Jeep", model: "Compass", variant: "Sport", status: "In Production", duration: "30 Days" },
+  { brand: "Jeep", model: "Compass", variant: "Sport", status: "In Production", duration: "25 Days" },
   { brand: "Jeep", model: "Wrangler", variant: "Rubicon", status: "In Transit", duration: "15 Days" },
-  { brand: "Jeep", model: "Wrangler", variant: "Sport", status: "Acknowledged", duration: "60 Days" },
+  { brand: "Jeep", model: "Wrangler", variant: "Sport", status: "Acknowledged", duration: "80 Days" },
   { brand: "Jeep", model: "Renegade", variant: "Base", status: "Allocated", duration: "50 Days" },
-  { brand: "Jeep", model: "Renegade", variant: "Premium", status: "In Paint", duration: "20 Days" },
+  { brand: "Jeep", model: "Renegade", variant: "Premium", status: "In Paint", duration: "45 Days" },
 
   { brand: "Citroën", model: "C3", variant: "Live", status: "Acknowledged", duration: "25 Days" },
-  { brand: "Citroën", model: "C3", variant: "Feel", status: "Allocated", duration: "20 Days" },
+  { brand: "Citroën", model: "C3", variant: "Feel", status: "Allocated", duration: "30 Days" },
   { brand: "Citroën", model: "C3", variant: "Feel Optional", status: "In Production", duration: "35 Days" },
   { brand: "Citroën", model: "C3", variant: "Shine Turbo AT", status: "In Paint", duration: "18 Days" },
   { brand: "Citroën", model: "C3", variant: "Shine CNG", status: "In Transit", duration: "15 Days" },
