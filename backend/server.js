@@ -29,7 +29,7 @@ let deliveryVehicles = [
    { brand: "Jeep", model: "Meridian", variant: "Max Turbo Dark Edition", status: "Acknowledged", duration: "28 Days" },
   { brand: "Jeep", model: "Meridian", variant: "Max Turbo AT", status: "In Production", duration: "19 Days" },
   { brand: "Jeep", model: "Wrangler", variant: "Rubicon", status: "In Transit", duration: "15 Days" },
-  { brand: "Jeep", model: "Wrangler", variant: "Sport", status: "Acknowledged", duration: "80 Days" },
+  { brand: "Jeep", model: "Wrangler", variant: "Sport", status: "Acknowledged", duration: "18 Days" },
   { brand: "Jeep", model: "Renegade", variant: "Base", status: "Allocated", duration: "50 Days" },
   { brand: "Jeep", model: "Renegade", variant: "Premium", status: "In Paint", duration: "45 Days" },
 
