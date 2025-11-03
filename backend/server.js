@@ -24,33 +24,33 @@ app.set("views", path.join(__dirname, "views"));
 let orders = [];
 
 let deliveryVehicles = [
-  { brand: "Jeep", model: "Compass", variant: "Limited", status: "Allocated", duration: "45 Days" },
-  { brand: "Jeep", model: "Compass", variant: "Sport", status: "In Production", duration: "25 Days" },
-   { brand: "Jeep", model: "Meridian", variant: "Max Turbo Dark Edition", status: "Acknowledged", duration: "28 Days" },
-  { brand: "Jeep", model: "Meridian", variant: "Max Turbo AT", status: "In Production", duration: "19 Days" },
-  { brand: "Jeep", model: "Wrangler", variant: "Rubicon", status: "In Transit", duration: "15 Days" },
-  { brand: "Jeep", model: "Wrangler", variant: "Sport", status: "Acknowledged", duration: "18 Days" },
-  { brand: "Jeep", model: "Renegade", variant: "Base", status: "Allocated", duration: "50 Days" },
-  { brand: "Jeep", model: "Renegade", variant: "Premium", status: "In Paint", duration: "45 Days" },
+  { brand: "Jeep", model: "Compass", variant: "Limited", status: "Allocated", color: "White", duration: "45 Days" },
+  { brand: "Jeep", model: "Compass", variant: "Sport", status: "In Production", color: "Red", duration: "25 Days" },
+   { brand: "Jeep", model: "Meridian", variant: "Longitude AT", status: "Acknowledged", color: "Black", duration: "28 Days" },
+  { brand: "Jeep", model: "Meridian", variant: "Longitude AT", status: "In Production", color: "White", duration: "19 Days" },
+  { brand: "Jeep", model: "Wrangler", variant: "Rubicon", status: "In Transit", color: "Red", duration: "15 Days" },
+  { brand: "Jeep", model: "Wrangler", variant: "Sport", status: "Acknowledged", color: "Red", duration: "18 Days" },
+  { brand: "Jeep", model: "Renegade", variant: "Base", status: "Allocated", color: "Black", duration: "50 Days" },
+  { brand: "Jeep", model: "Renegade", variant: "Premium", status: "In Paint", color: "White", duration: "45 Days" },
 
-  { brand: "Citroën", model: "C3", variant: "Live", status: "Acknowledged", duration: "25 Days" },
-  { brand: "Citroën", model: "C3", variant: "Feel", status: "Allocated", duration: "30 Days" },
-  { brand: "Citroën", model: "C3", variant: "Feel Optional", status: "In Production", duration: "35 Days" },
-  { brand: "Citroën", model: "C3", variant: "Shine Turbo AT", status: "In Paint", duration: "18 Days" },
-  { brand: "Citroën", model: "C3", variant: "Shine CNG", status: "In Transit", duration: "15 Days" },
+  { brand: "Citroën", model: "C3", variant: "Live", status: "Acknowledged", color: "Red", duration: "25 Days" },
+  { brand: "Citroën", model: "C3", variant: "Feel", status: "Allocated", color: "Black", duration: "30 Days" },
+  { brand: "Citroën", model: "C3", variant: "Feel Optional", status: "In Production", color: "White", duration: "35 Days" },
+  { brand: "Citroën", model: "C3", variant: "Shine Turbo AT", status: "In Paint", color: "White", duration: "18 Days" },
+  { brand: "Citroën", model: "C3", variant: "Shine CNG", status: "In Transit", color: "Red", duration: "15 Days" },
 
-  { brand: "Citroën", model: "eC3", variant: "Live", status: "Allocated", duration: "27 Days" },
-  { brand: "Citroën", model: "eC3", variant: "Feel", status: "In Production", duration: "32 Days" },
-  { brand: "Citroën", model: "eC3", variant: "Shine", status: "In Transit", duration: "16 Days" },
+  { brand: "Citroën", model: "eC3", variant: "Live", status: "Allocated", color: "Black", duration: "27 Days" },
+  { brand: "Citroën", model: "eC3", variant: "Feel", status: "In Production", color: "Red", duration: "32 Days" },
+  { brand: "Citroën", model: "eC3", variant: "Shine", status: "In Transit", color: "Red", duration: "16 Days" },
 
-  { brand: "Citroën", model: "C3 Aircross", variant: "Max 1.2 Turbo 7 STR AT", status: "In Paint", duration: "22 Days" },
-  { brand: "Citroën", model: "C3 Aircross", variant: "Shine Turbo AT", status: "In Production", duration: "28 Days" },
-  { brand: "Citroën", model: "C3 Aircross", variant: "Max Turbo Dark Edition", status: "Allocated", duration: "19 Days" },
+  { brand: "Citroën", model: "C3 Aircross", variant: "Max 1.2 Turbo 7 STR AT", status: "In Paint", color: "Red", duration: "22 Days" },
+  { brand: "Citroën", model: "C3 Aircross", variant: "Shine Turbo AT", status: "In Production", color: "Black", duration: "28 Days" },
+  { brand: "Citroën", model: "C3 Aircross", variant: "Max Turbo Dark Edition", status: "Allocated", color: "White", duration: "19 Days" },
 
-  { brand: "Citroën", model: "C5 Aircross", variant: "Shine", status: "Acknowledged", duration: "40 Days" },
-  { brand: "Citroën", model: "C5 Aircross", variant: "Max", status: "In Production", duration: "34 Days" },
-  { brand: "Citroën", model: "C5 Aircross", variant: "Shine", status: "In Voiced", duration: "14 Days" },
-  { brand: "Citroën", model: "C5 Aircross", variant: "Max", status: "Delivered", duration: "Delivered" }
+  { brand: "Citroën", model: "C5 Aircross", variant: "Shine", status: "Acknowledged", color: "Black", duration: "40 Days" },
+  { brand: "Citroën", model: "C5 Aircross", variant: "Max", status: "In Production", color: "White", duration: "34 Days" },
+  { brand: "Citroën", model: "C5 Aircross", variant: "Shine", status: "In Voiced", color: "Red", duration: "14 Days" },
+  { brand: "Citroën", model: "C5 Aircross", variant: "Max", status: "Delivered", color: "White", duration: "Delivered" }
 ];
  
 const {
