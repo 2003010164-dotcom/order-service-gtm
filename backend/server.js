@@ -22,6 +22,7 @@ app.set("views", path.join(__dirname, "views"));
  
 // In-memory order storage
 let orders = [];
+let partsOrders = [];
 
 let deliveryVehicles = [
   { brand: "Jeep", model: "Compass", variant: "Limited", status: "Allocated", color: "White", duration: "45 Days" },
@@ -243,6 +244,39 @@ app.post('/fo-delivered', (req, res) => {
   }
 
   res.send("OK");
+});
+
+
+app.post("/receive-parts-order", (req, res) => {
+  try {
+    const data = req.body;
+    console.log("📦 Parts Order received:", JSON.stringify(data, null, 2));
+
+    const manufacturerOrderNo =
+      "PARTS-" + (partsOrders.length + 1).toString().padStart(6, "0");
+
+    const partsOrderObj = {
+      manufacturerOrderNo,
+      salesOrderNo: data.order?.orderNumber || "",
+      dealerName: data.order?.dealerName || "Unknown Dealer",
+      parts: Array.isArray(data.products)
+        ? data.products.map(p => `${p.Name} (x${p.Quantity})`)
+        : [],
+      status: data.order?.status || "Acknowledged"
+    };
+
+    partsOrders.push(partsOrderObj);
+    console.log("✅ Parts order stored:", partsOrderObj);
+
+    res.status(200).send({ message: "Parts order received" });
+  } catch (err) {
+    console.error("❌ Error receiving parts order:", err);
+    res.status(500).send("Failed to receive parts order");
+  }
+});
+
+app.get("/parts-orders", (req, res) => {
+  res.render("partsOrders", { orders: partsOrders });
 });
 
 app.get("/delivery-duration", (req,res)=>{
