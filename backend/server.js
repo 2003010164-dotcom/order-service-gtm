@@ -224,7 +224,7 @@ app.post("/login", (req, res) => {
   const { email, password } = req.body;
   if (email === "manufacturer@app.com" && password === "admin123") {
     console.log("✅ Login success:", email);
-    res.redirect("/orders");
+    res.redirect("/dashboard");
   } else {
     res.send("<h3>Invalid credentials. <a href='/login'>Try again</a></h3>");
   }
@@ -244,6 +244,10 @@ app.post('/fo-delivered', (req, res) => {
   }
 
   res.send("OK");
+});
+
+app.get("/dashboard" , (req,res) => {
+ res.render("dashboard");
 });
 
 
