@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Welcome</title>
+  <style>
+    body {
+      font-family: "Segoe UI", Arial, sans-serif;
+      background: linear-gradient(120deg, #06122d, #2c3e50);
+      margin: 0;
+      color: white;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 50px;
+    }
+
+    h1 {
+      font-size: 2.6rem;
+      margin-bottom: 15px;
+    }
+
+    p {
+      font-size: 1.1rem;
+      max-width: 750px;
+      line-height: 1.6;
+      opacity: 0.95;
+    }
+
+    .cards {
+      display: flex;
+      gap: 25px;
+      margin-top: 40px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .card {
+      background: rgba(255,255,255,0.08);
+      padding: 25px;
+      border-radius: 15px;
+      width: 280px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    }
+
+    .card h3 {
+      margin-bottom: 10px;
+      color: #e0f2fe;
+    }
+
+    .card p {
+      font-size: 0.95rem;
+      color: #dbeafe;
+    }
+  </style>
+</head>
+<body>
+
+<%- include('navbar') %>
+
+<div class="content">
+  <h1>Manufacturer Order Management System</h1>
+
+  <p>
+    This portal enables manufacturers to seamlessly manage Vehicle and Parts
+    orders received from dealers. Track order lifecycle, update fulfillment
+    status, and sync data in real-time with Salesforce.
+  </p>
+
+  <div class="cards">
+    <div class="card">
+      <h3> Vehicle Orders</h3>
+      <p>
+        Manage vehicle manufacturing orders, track production stages,
+        and confirm delivery to dealers.
+      </p>
+    </div>
+
+    <div class="card">
+      <h3> Parts Orders</h3>
+      <p>
+        Handle spare parts orders, update inventory availability,
+        and ensure timely fulfillment.
+      </p>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
