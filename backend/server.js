@@ -266,16 +266,16 @@ app.post("/receive-parts-order", (req, res) => {
     return res.status(400).send("Not a Parts order");
   }
 
-    const manufacturerOrderNo =
-      "PARTS-" + (partsOrders.length + 1).toString().padStart(6, "0");
+    
+    const manufacturerOrderNo = "Issue-" + (orders.length + 1).toString().padStart(7, "0");
+
 
     const partsOrderObj = {
       manufacturerOrderNo,
       salesOrderNo: data.order?.orderNumber || "",
       dealerName: data.order?.dealerName || "Unknown Dealer",
-      parts: Array.isArray(data.products)
-        ? data.products.map(p => `${p.Name} (x${p.Quantity})`)
-        : [],
+      vehicle: Array.isArray(data.products) ? data.products.map(p => `${p.ProductName} (x${p.Quantity})`) : (data.products || []),
+
       status: data.order?.status || "Acknowledged"
     };
 
