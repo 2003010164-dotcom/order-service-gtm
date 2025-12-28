@@ -87,6 +87,10 @@ app.post("/receive-order", (req, res) => {
   try {
     const data = req.body;
     console.log("📥 Received Order payload:", JSON.stringify(data, null, 2));
+    if (data.orderType !== 'VEHICLE') {
+    return res.status(400).send("Not a Vehicle order");
+  }
+
  
     const manufacturerOrderNo = "Issue-" + (orders.length + 1).toString().padStart(7, "0");
  
@@ -99,6 +103,7 @@ app.post("/receive-order", (req, res) => {
     };
  
     orders.push(orderObj);
+    res.send("Vehicle order received");
     console.log("✅ Stored order in memory:", orderObj);
     res.status(200).send({ message: "Order received successfully" });
   } catch (err) {
@@ -130,6 +135,8 @@ app.post("/update-order-status", (req, res) => {
 app.get("/orders", (req, res) => {
   res.render("orders", { orders });
 });
+
+
  
 app.post("/submit-statuses", async (req, res) => {
   try {
@@ -255,6 +262,9 @@ app.post("/receive-parts-order", (req, res) => {
   try {
     const data = req.body;
     console.log("📦 Parts Order received:", JSON.stringify(data, null, 2));
+    if (data.orderType !== 'PARTS') {
+    return res.status(400).send("Not a Parts order");
+  }
 
     const manufacturerOrderNo =
       "PARTS-" + (partsOrders.length + 1).toString().padStart(6, "0");
@@ -270,6 +280,8 @@ app.post("/receive-parts-order", (req, res) => {
     };
 
     partsOrders.push(partsOrderObj);
+    res.send("Parts order received");
+
     console.log("✅ Parts order stored:", partsOrderObj);
 
     res.status(200).send({ message: "Parts order received" });
@@ -282,6 +294,8 @@ app.post("/receive-parts-order", (req, res) => {
 app.get("/parts-orders", (req, res) => {
   res.render("partsOrders", { orders: partsOrders });
 });
+
+
 
 app.get("/delivery-duration", (req,res)=>{
  res.render("deliveryDuration", {deliveryVehicles});
