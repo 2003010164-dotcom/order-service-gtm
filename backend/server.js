@@ -274,8 +274,9 @@ app.post("/receive-parts-order", (req, res) => {
       manufacturerOrderNo,
       salesOrderNo: data.order?.orderNumber || "",
       dealerName: data.order?.dealerName || "Unknown Dealer",
-      vehicle: Array.isArray(data.products) ? data.products.map(p => `${p.ProductName} (x${p.Quantity})`) : (data.products || []),
-
+      parts: Array.isArray(data.products)
+        ? data.products.map(p => `${p.Name} (x${p.Quantity})`)
+        : [],
       status: data.order?.status || "Acknowledged"
     };
 
