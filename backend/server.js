@@ -98,7 +98,7 @@ app.post("/receive-order", (req, res) => {
       manufacturerOrderNo,
       salesOrderNo: data.order?.orderNumber || data.orderNumber || "",
       dealerName: data.order?.GTM_Partner_Account__c || data.order?.dealerName || data.order?.accountName || "Unknown Dealer",
-      vehicle: Array.isArray(data.products) ? data.products.map(p => `${p.ProductName} (x${p.Quantity})`) : (data.products || []),
+      vehicle: Array.isArray(data.products) ? data.products.map(p => `${p.Product2?.Name || "Unknown Product"}(x${p.Quantity})') : [],
       status: data.order?.status || "Acknowledged"
     };
  
@@ -274,9 +274,9 @@ app.post("/receive-parts-order", (req, res) => {
       manufacturerOrderNo,
       salesOrderNo: data.order?.orderNumber || "",
       dealerName: data.order?.dealerName || "Unknown Dealer",
-      parts: Array.isArray(data.products)
-        ? data.products.map(p => `${p.Name} (x${p.Quantity})`)
-        : [],
+     parts: Array.isArray(data.products)
+  ? data.products.map(p => `${p.Product2?.Name || "Unknown Product"} (x${p.Quantity})`)
+  : [],
       status: data.order?.status || "Acknowledged"
     };
 
