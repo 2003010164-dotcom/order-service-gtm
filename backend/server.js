@@ -98,8 +98,10 @@ app.post("/receive-order", (req, res) => {
       manufacturerOrderNo,
       salesOrderNo: data.order?.orderNumber || data.orderNumber || "",
       dealerName: data.order?.GTM_Partner_Account__c || data.order?.dealerName || data.order?.accountName || "Unknown Dealer",
-      vehicle: Array.isArray(data.products) ? data.products.map(p => `${p.Product2?.Name || "Unknown Product"}(x${p.Quantity})') : [],
-      status: data.order?.status || "Acknowledged"
+  vehicle: Array.isArray(data.products)
+  ? data.products.map(p => `${p.Product2?.Name || "Unknown Product"} (x${p.Quantity})`)
+  : [],      
+     status: data.order?.status || "Acknowledged"
     };
  
     orders.push(orderObj);
