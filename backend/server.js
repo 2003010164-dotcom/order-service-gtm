@@ -244,7 +244,12 @@ app.post('/fo-delivered', (req, res) => {
   const { salesOrderNo } = req.body;
   console.log(" Delivered update from Salesforce:", salesOrderNo);
 
-  const order = orders.find(o => o.salesOrderNo === salesOrderNo);
+  let order = orders.find(o => o.salesOrderNo === salesOrderNo);
+
+  if (!order) {
+    order = partsOrders.find(o => o.salesOrderNo === salesOrderNo);
+  }
+
   if (order) {
     order.status = "Delivered";
     console.log(" Updated order status to Delivered in Node memory");
