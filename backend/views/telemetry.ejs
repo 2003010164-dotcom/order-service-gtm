@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Telemetry Data</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f6fb;
+      margin: 0;
+      padding: 0;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 30px auto;
+      padding: 20px;
+    }
+
+    h2 {
+      color: #06122d;
+      margin-bottom: 15px;
+    }
+
+    .card {
+      background: white;
+      border-radius: 12px;
+      padding: 18px;
+      margin-bottom: 18px;
+      box-shadow: 0px 2px 10px rgba(0,0,0,0.08);
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 20px;
+    }
+
+    .left {
+      flex: 1;
+    }
+
+    .right {
+      width: 220px;
+      text-align: right;
+    }
+
+    .label {
+      font-size: 13px;
+      color: #555;
+    }
+
+    .value {
+      font-size: 15px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: #111;
+    }
+
+    .btn {
+      background: #06122d;
+      color: white;
+      padding: 10px 14px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      width: 100%;
+    }
+
+    .btn:hover {
+      background: #0a1d4b;
+    }
+
+    .status {
+      margin-top: 10px;
+      font-size: 13px;
+      color: green;
+      font-weight: 600;
+      display: none;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Navbar -->
+  <nav style="
+    background:#06122d;
+    padding:12px;
+    display:flex;
+    justify-content:center;
+    gap:30px;
+  ">
+    <a href="/dashboard" style="color:white;text-decoration:none;font-weight:600;">Home</a>
+    <a href="/orders" style="color:white;text-decoration:none;font-weight:600;">Vehicle Orders</a>
+    <a href="/parts-orders" style="color:white;text-decoration:none;font-weight:600;">Parts Orders</a>
+    <a href="/telemetry" style="color:white;text-decoration:none;font-weight:600;">Telemetry Data</a>
+  </nav>
+
+  <div class="container">
+    <h2>Vehicle Telemetry Dashboard</h2>
+
+    <% telemetryData.forEach((t, index) => { %>
+      <div class="card">
+        <div class="left">
+          <div class="label">Vehicle</div>
+          <div class="value"><%= t.vehicle %> (<%= t.vin %>)</div>
+
+          <div class="label">Speed</div>
+          <div class="value"><%= t.speed %> km/h</div>
+
+          <div class="label">Fuel</div>
+          <div class="value"><%= t.fuel %>%</div>
+
+          <div class="label">Battery</div>
+          <div class="value"><%= t.battery %>%</div>
+
+          <div class="label">Engine Temperature</div>
+          <div class="value"><%= t.engineTemp %> °C</div>
+
+          <div class="label">Tyre Pressure</div>
+          <div class="value"><%= t.tyrePressure %></div>
+
+          <div class="label">Location</div>
+          <div class="value"><%= t.location %></div>
+
+          <div class="label">Odometer</div>
+          <div class="value"><%= t.odometer %> km</div>
+
+          <div class="label">Last Updated</div>
+          <div class="value"><%= t.lastUpdated %></div>
+        </div>
+
+        <div class="right">
+          <button class="btn" onclick="sendTelemetry(<%= index %>)">
+            Send to CRM
+          </button>
+          <div class="status" id="status-<%= index %>">✅ Sent to Salesforce</div>
+        </div>
+      </div>
+    <% }) %>
+
+  </div>
+
+  <script>
+    const telemetryData = <%- JSON.stringify(telemetryData) %>;
+
+    async function sendTelemetry(index) {
+      const payload = telemetryData[index];
+
+      try {
+        const res = await fetch("/send-telemetry-to-crm", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+
+        const data = await res.json();
+
+        if (res.ok) {
+          document.getElementById("status-" + index).style.display = "block";
+        } else {
+          alert("Failed: " + JSON.stringify(data));
+        }
+      } catch (err) {
+        alert("Error sending telemetry: " + err.message);
+      }
+    }
+  </script>
+
+</body>
+</html>
