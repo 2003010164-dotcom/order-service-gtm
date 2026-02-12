@@ -39,15 +39,63 @@ let telemetryData = [
     lastUpdated: new Date().toLocaleString()
   },
   {
-    vin: "VIN-CIT-0002",
+    vin: "VIN-JEEP-0002",
+    vehicle: "Jeep Meridian",
+    speed: 80,
+    battery: 65,
+    fuel: 61,
+    engineTemp: 96,
+    tyrePressure: "33 PSI",
+    location: "Delhi, India",
+    odometer: 22340,
+    lastUpdated: new Date().toLocaleString()
+  },
+  {
+    vin: "VIN-JEEP-0003",
+    vehicle: "Jeep Wrangler",
+    speed: 55,
+    battery: 70,
+    fuel: 40,
+    engineTemp: 90,
+    tyrePressure: "35 PSI",
+    location: "Bangalore, India",
+    odometer: 18500,
+    lastUpdated: new Date().toLocaleString()
+  },
+  {
+    vin: "VIN-CIT-0001",
     vehicle: "Citroën C3",
-    speed: 45,
-    battery: 55,
+    speed: 48,
+    battery: 50,
     fuel: 68,
-    engineTemp: 88,
+    engineTemp: 87,
     tyrePressure: "33 PSI",
     location: "Mumbai, India",
     odometer: 9820,
+    lastUpdated: new Date().toLocaleString()
+  },
+  {
+    vin: "VIN-CIT-0002",
+    vehicle: "Citroën eC3",
+    speed: 72,
+    battery: 82,
+    fuel: 0,
+    engineTemp: 78,
+    tyrePressure: "34 PSI",
+    location: "Hyderabad, India",
+    odometer: 7650,
+    lastUpdated: new Date().toLocaleString()
+  },
+  {
+    vin: "VIN-CIT-0003",
+    vehicle: "Citroën C5 Aircross",
+    speed: 66,
+    battery: 60,
+    fuel: 58,
+    engineTemp: 93,
+    tyrePressure: "32 PSI",
+    location: "Chennai, India",
+    odometer: 31210,
     lastUpdated: new Date().toLocaleString()
   }
 ];
