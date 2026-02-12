@@ -24,6 +24,35 @@ app.set("views", path.join(__dirname, "views"));
 let orders = [];
 let partsOrders = [];
 
+
+let telemetryData = [
+  {
+    vin: "VIN-JEEP-0001",
+    vehicle: "Jeep Compass",
+    speed: 62,
+    battery: 78,
+    fuel: 54,
+    engineTemp: 92,
+    tyrePressure: "34 PSI",
+    location: "Pune, India",
+    odometer: 15234,
+    lastUpdated: new Date().toLocaleString()
+  },
+  {
+    vin: "VIN-CIT-0002",
+    vehicle: "Citroën C3",
+    speed: 45,
+    battery: 55,
+    fuel: 68,
+    engineTemp: 88,
+    tyrePressure: "33 PSI",
+    location: "Mumbai, India",
+    odometer: 9820,
+    lastUpdated: new Date().toLocaleString()
+  }
+];
+
+
 let deliveryVehicles = [
   { brand: "Jeep", model: "Compass", variant: "Limited", status: "Allocated", color: "White", duration: "45 Days" },
   { brand: "Jeep", model: "Compass", variant: "Sport", status: "In Production", color: "Red", duration: "25 Days" },
@@ -302,6 +331,14 @@ app.post("/receive-parts-order", (req, res) => {
 app.get("/parts-orders", (req, res) => {
   res.render("partsOrders", { orders: partsOrders });
 });
+
+
+
+app.get("/telemetry", (req, res) => {
+  res.render("telemetry", { telemetryData });
+});
+
+
 
 
 
