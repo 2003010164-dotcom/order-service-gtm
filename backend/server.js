@@ -311,7 +311,13 @@ app.post("/login", (req, res) => {
   if (email === "manufacturer@app.com" && password === "admin123") {
     console.log("✅ Login success:", email);
     res.redirect("/dashboard");
-  } else {
+  } 
+   if(email === "telemetryManager@app.com" && password === "admin123"){
+    console.log("Login Success: ", email);
+    res.redirect("/telemetry");
+   }
+  
+  else {
     res.send("<h3>Invalid credentials. <a href='/login'>Try again</a></h3>");
   }
 });
