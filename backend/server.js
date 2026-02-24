@@ -159,6 +159,39 @@ async function getSalesforceToken() {
 app.get("/", (req, res) => {
   res.render("home");
 });
+
+
+// Store only the latest connected-asset received from Salesforce
+let latestAsset = null;
+
+
+app.post("/receive-asset", (req, res) => {
+  try {
+    const data = req.body;
+    console.log("📥 Received Asset payload:", JSON.stringify(data, null, 2));
+
+    // Expecting:
+    // { orderNumber: "xxxx", asset: { assetId, serialNumber, name } }
+    if (!data || !data.asset || !data.asset.serialNumber) {
+      return res.status(400).json({ message: "Invalid payload. asset.serialNumber is required" });
+    }
+
+    latestAsset = {
+      orderNumber: data.orderNumber || "",
+      assetId: data.asset.assetId || "",
+      serialNumber: data.asset.serialNumber,
+      name: data.asset.name || ""
+    };
+
+    console.log("✅ Stored latest asset:", latestAsset);
+    return res.status(200).json({ message: "Asset received successfully", latestAsset });
+  } catch (err) {
+    console.error("❌ Error in /receive-asset:", err);
+    return res.status(500).json({ message: "Failed to process asset", error: err.message });
+  }
+});
+
+
  
 app.post("/receive-order", (req, res) => {
   try {
@@ -389,9 +422,83 @@ app.get("/parts-orders", (req, res) => {
 
 
 app.get("/telemetry", (req, res) => {
-  res.render("telemetry", { telemetryData });
+  // Default model with required fields (editable)
+  const model = {
+    vehicleSerialNumber: latestAsset?.serialNumber || "VHC-0004",
+    eventTimestamp: new Date().toISOString().slice(0, 16), // for datetime-local
+    eventType: "RPMSpike",
+    sensorValueNumber: 0,
+    sensorUnit: "RPM",
+    severity: "High",
+    component: "Engine",
+    recommendedAction: "Log incident for analysis. Could indicate aggressive driving or transmission slippage.",
+    status: "New"
+  };
+
+  res.render("telemetry", { latestAsset, model });
 });
 
+
+app.post("/send-telemetry-to-crm", async (req, res) => {
+  try {
+    // Payload from UI
+    const {
+      vehicleSerialNumber,
+      eventTimestamp,
+      eventType,
+      sensorValueNumber,
+      sensorUnit,
+      severity,
+      component,
+      recommendedAction,
+      status
+    } = req.body;
+
+    const finalSerial = vehicleSerialNumber || latestAsset?.serialNumber;
+    if (!finalSerial) {
+      return res.status(400).json({ message: "No vehicleSerialNumber available. Receive asset first." });
+    }
+
+    // Compose sensorValue text like "35 °C" or "0 RPM"
+    const sensorText = `${sensorValueNumber ?? 0} ${sensorUnit || ""}`.trim();
+
+    // Salesforce token using your existing password flow
+    const auth = await getSalesforceToken();
+
+    // Call Salesforce Apex REST endpoint created above
+    const endpoint = `${auth.instance_url}/services/apexrest/telematics/v1/events`;
+
+    const sfPayload = {
+      vehicleSerialNumber: finalSerial,
+      eventTimestamp: eventTimestamp ? new Date(eventTimestamp).toISOString() : new Date().toISOString(),
+      eventType,
+      sensorValue: sensorText,
+      severity,
+      component,
+      recommendedAction,
+      status
+    };
+
+    console.log("➡️ Sending telemetry to Salesforce:", JSON.stringify(sfPayload, null, 2));
+
+    const sfResp = await axios.post(endpoint, sfPayload, {
+      headers: {
+        Authorization: `Bearer ${auth.access_token}`,
+        "Content-Type": "application/json"
+      },
+      timeout: 20000
+    });
+
+    return res.status(200).json(sfResp.data);
+
+  } catch (err) {
+    console.error("❌ Error in /send-telemetry-to-crm:", err.message);
+    if (err.response) {
+      return res.status(err.response.status).json(err.response.data);
+    }
+    return res.status(500).json({ message: "Internal server error", error: err.message });
+  }
+});
 
 
 
