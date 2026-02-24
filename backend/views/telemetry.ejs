@@ -1,8 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Telemetry Data</title>
-
+  <title>Telematics Data</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -11,7 +10,6 @@
       padding: 0;
     }
 
-    /* Navbar */
     nav {
       background: #06122d;
       padding: 12px;
@@ -27,7 +25,7 @@
     }
 
     .container {
-      max-width: 1200px;
+      max-width: 900px;
       margin: 25px auto;
       padding: 10px 20px;
     }
@@ -38,62 +36,51 @@
       font-size: 22px;
     }
 
-    /* 🔥 GRID FLASHCARDS */
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 18px;
-    }
-
     .card {
       background: white;
       border-radius: 14px;
       padding: 18px;
       box-shadow: 0px 4px 12px rgba(0,0,0,0.08);
       border: 1px solid #e7e9f1;
-      transition: 0.2s ease-in-out;
     }
 
-    .card:hover {
-      transform: translateY(-3px);
-      box-shadow: 0px 8px 18px rgba(0,0,0,0.10);
+    .subtle {
+      color: #666;
+      font-size: 13px;
+      margin-top: 4px;
     }
 
-    .title {
-      font-size: 16px;
+    .row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin-top: 14px;
+    }
+
+    .field label {
+      display: block;
+      font-size: 13px;
+      color: #666;
       font-weight: 700;
-      color: #06122d;
       margin-bottom: 6px;
     }
 
-    .vin {
-      font-size: 13px;
-      color: #555;
-      margin-bottom: 14px;
-    }
-
-    .data-row {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 8px;
+    input, select, textarea {
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 10px;
+      border: 1px solid #d7dbea;
       font-size: 14px;
+      outline: none;
     }
 
-    .label {
-      color: #666;
-      font-weight: 600;
+    textarea {
+      min-height: 90px;
+      resize: vertical;
     }
 
-    .value {
-      color: #111;
-      font-weight: 600;
-    }
-
-    .footer {
-      margin-top: 15px;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
+    .rowFull {
+      margin-top: 14px;
     }
 
     .btn {
@@ -103,9 +90,10 @@
       border: none;
       border-radius: 10px;
       cursor: pointer;
-      font-weight: 700;
+      font-weight: 800;
       width: 100%;
       font-size: 14px;
+      margin-top: 16px;
     }
 
     .btn:hover {
@@ -114,11 +102,12 @@
 
     .status {
       font-size: 13px;
-      font-weight: 700;
+      font-weight: 800;
       display: none;
       text-align: center;
-      padding: 8px;
+      padding: 10px;
       border-radius: 10px;
+      margin-top: 12px;
     }
 
     .success {
@@ -133,104 +122,150 @@
       border: 1px solid #ffbaba;
     }
 
-    /* Responsive */
-    @media(max-width: 980px) {
-      .grid {
-        grid-template-columns: repeat(2, 1fr);
-      }
+    .smallNote {
+      font-size: 12px;
+      color: #777;
+      margin-top: 8px;
     }
 
-    @media(max-width: 600px) {
-      .grid {
-        grid-template-columns: repeat(1, 1fr);
-      }
+    @media(max-width: 720px) {
+      .row { grid-template-columns: 1fr; }
     }
   </style>
 </head>
 
 <body>
-
-  <!-- Navbar -->
-  
+  <nav>
+    <a href="/">Home</a>
+    <a href="/orders">Orders</a>
+    <a href="/telemetry">Telematics</a>
+    <a href="/dashboard">Dashboard</a>
+  </nav>
 
   <div class="container">
-    <h2>Vehicle Telemetry Dashboard</h2>
+    <h2>Telematics Data (Single Vehicle)</h2>
 
-    <div class="grid">
-      <% telemetryData.forEach((t, index) => { %>
-        <div class="card">
+    <div class="card">
+      <div style="font-weight:800;color:#06122d;font-size:16px;">
+        Vehicle__c: <span id="vehicleText"><%= model.vehicleSerialNumber %></span>
+      </div>
+      <div class="subtle">
+        (This comes from Asset.SerialNumber. If Salesforce hasn’t sent an asset yet, a default value is shown.)
+      </div>
 
-          <div class="title"><%= t.vehicle %></div>
-          <div class="vin">VIN: <%= t.vin %></div>
-
-          <div class="data-row">
-            <div class="label">Speed</div>
-            <div class="value"><%= t.speed %> km/h</div>
-          </div>
-
-          <div class="data-row">
-            <div class="label">Fuel</div>
-            <div class="value"><%= t.fuel %>%</div>
-          </div>
-
-          <div class="data-row">
-            <div class="label">Battery</div>
-            <div class="value"><%= t.battery %>%</div>
-          </div>
-
-          <div class="data-row">
-            <div class="label">Engine Temp</div>
-            <div class="value"><%= t.engineTemp %> °C</div>
-          </div>
-
-          <div class="data-row">
-            <div class="label">Tyre Pressure</div>
-            <div class="value"><%= t.tyrePressure %></div>
-          </div>
-
-          <div class="data-row">
-            <div class="label">Odometer</div>
-            <div class="value"><%= t.odometer %> km</div>
-          </div>
-
-          <div class="data-row">
-            <div class="label">Location</div>
-            <div class="value"><%= t.location %></div>
-          </div>
-
-          <div class="data-row">
-            <div class="label">Updated</div>
-            <div class="value"><%= t.lastUpdated %></div>
-          </div>
-
-          <div class="footer">
-            <button class="btn" onclick="sendTelemetry(<%= index %>)">
-              Send to CRM
-            </button>
-
-            <div class="status success" id="success-<%= index %>">
-              ✅ Sent to Salesforce
-            </div>
-
-            <div class="status fail" id="fail-<%= index %>">
-              ❌ Failed to send
-            </div>
-          </div>
-
+      <div class="row">
+        <div class="field">
+          <label>Vehicle__c (Asset SerialNumber)</label>
+          <input id="vehicleSerialNumber" value="<%= model.vehicleSerialNumber %>" />
         </div>
-      <% }) %>
+
+        <div class="field">
+          <label>Event_Timestamp__c</label>
+          <input id="eventTimestamp" type="datetime-local" value="<%= model.eventTimestamp %>" />
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="field">
+          <label>Event_Type__c</label>
+          <select id="eventType">
+            <option value="RPMSpike" <%= model.eventType === 'RPMSpike' ? 'selected' : '' %>>RPMSpike</option>
+            <option value="EngineTempHigh" <%= model.eventType === 'EngineTempHigh' ? 'selected' : '' %>>EngineTempHigh</option>
+            <option value="Predictive Maintenance" <%= model.eventType === 'Predictive Maintenance' ? 'selected' : '' %>>Predictive Maintenance</option>
+          </select>
+          <div class="smallNote">
+            Threshold examples in Salesforce REST service:
+            EngineTempHigh &gt; 30, RPMSpike &gt; 6000.
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Sensor_Value__c (starts at 0)</label>
+          <div class="row" style="grid-template-columns: 1fr 1fr; margin-top:0;">
+            <div class="field">
+              <input id="sensorValueNumber" type="number" value="<%= model.sensorValueNumber %>" />
+            </div>
+            <div class="field">
+              <input id="sensorUnit" value="<%= model.sensorUnit %>" />
+            </div>
+          </div>
+          <div class="smallNote">
+            Salesforce stores it like: "35 °C" or "6200 RPM" or "0 RPM".
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="field">
+          <label>Severity__c</label>
+          <select id="severity">
+            <option value="Low" <%= model.severity === 'Low' ? 'selected' : '' %>>Low</option>
+            <option value="Medium" <%= model.severity === 'Medium' ? 'selected' : '' %>>Medium</option>
+            <option value="High" <%= model.severity === 'High' ? 'selected' : '' %>>High</option>
+            <option value="Critical" <%= model.severity === 'Critical' ? 'selected' : '' %>>Critical</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label>Status__c</label>
+          <select id="status">
+            <option value="New" <%= model.status === 'New' ? 'selected' : '' %>>New</option>
+            <option value="In Progress" <%= model.status === 'In Progress' ? 'selected' : '' %>>In Progress</option>
+            <option value="Resolved" <%= model.status === 'Resolved' ? 'selected' : '' %>>Resolved</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="field">
+          <label>Component__c</label>
+          <input id="component" value="<%= model.component %>" />
+        </div>
+
+        <div class="field">
+          <label>Recommended_Action__c</label>
+          <input id="recommendedActionShort" value="<%= model.recommendedAction %>" />
+        </div>
+      </div>
+
+      <div class="rowFull">
+        <div class="field">
+          <label>Recommended_Action__c (Long)</label>
+          <textarea id="recommendedAction"><%= model.recommendedAction %></textarea>
+        </div>
+      </div>
+
+      <button class="btn" onclick="sendTelemetry()">Submit (Create Telematic Event + Case if threshold exceeded)</button>
+
+      <div class="status success" id="successBox">
+        ✅ Sent to Salesforce (Telematic Event created)
+      </div>
+
+      <div class="status fail" id="failBox">
+        ❌ Failed to send
+      </div>
+
+      <div class="smallNote" id="resultText"></div>
     </div>
   </div>
 
   <script>
-    const telemetryData = <%- JSON.stringify(telemetryData) %>;
+    async function sendTelemetry() {
+      document.getElementById("successBox").style.display = "none";
+      document.getElementById("failBox").style.display = "none";
+      document.getElementById("resultText").innerText = "";
 
-    async function sendTelemetry(index) {
-      const payload = telemetryData[index];
-
-      // Hide previous statuses
-      document.getElementById("success-" + index).style.display = "none";
-      document.getElementById("fail-" + index).style.display = "none";
+      const payload = {
+        vehicleSerialNumber: document.getElementById("vehicleSerialNumber").value.trim(),
+        eventTimestamp: document.getElementById("eventTimestamp").value,
+        eventType: document.getElementById("eventType").value,
+        sensorValueNumber: Number(document.getElementById("sensorValueNumber").value || 0),
+        sensorUnit: document.getElementById("sensorUnit").value.trim(),
+        severity: document.getElementById("severity").value,
+        component: document.getElementById("component").value.trim(),
+        recommendedAction: document.getElementById("recommendedAction").value.trim(),
+        status: document.getElementById("status").value
+      };
 
       try {
         const res = await fetch("/send-telemetry-to-crm", {
@@ -241,18 +276,23 @@
 
         const data = await res.json();
 
-        if (res.ok) {
-          document.getElementById("success-" + index).style.display = "block";
+        if (res.ok && data.success) {
+          document.getElementById("successBox").style.display = "block";
+          let msg = data.message || "Success";
+          if (data.telematicEventId) msg += " | Telematic Event: " + data.telematicEventId;
+          if (data.caseId) msg += " | Case: " + data.caseId;
+          document.getElementById("resultText").innerText = msg;
         } else {
-          document.getElementById("fail-" + index).style.display = "block";
+          document.getElementById("failBox").style.display = "block";
+          document.getElementById("resultText").innerText = (data && (data.message || JSON.stringify(data))) || "Error";
           console.log("Salesforce Error:", data);
         }
       } catch (err) {
-        document.getElementById("fail-" + index).style.display = "block";
+        document.getElementById("failBox").style.display = "block";
+        document.getElementById("resultText").innerText = err.message;
         console.log("Error:", err.message);
       }
     }
   </script>
-
 </body>
 </html>
