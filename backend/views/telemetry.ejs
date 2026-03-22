@@ -15,165 +15,294 @@
   }
 
   /* Navbar */
-  nav {
-    background: #0B2E33;
-    padding: 12px;
-    display: flex;
-    justify-content: center;
-    gap: 30px;
-  }
-  nav a {
-    color: #B8E3E9;
-    text-decoration: none;
-    font-weight: 600;
-    font-size: 14px;
-  }
-  nav a:hover { text-decoration: underline; }
+  /* --- Telematics UI: Real-time console look (CSS-only update) --- */
 
-  .container {
-    max-width: 1200px;
-    margin: 25px auto;
-    padding: 10px 20px 30px;
-  }
+:root {
+  --bg: #ffffff;
 
-  h2 {
-    color: #0B2E33;
-    margin: 0 0 10px;
-    font-size: 22px;
-  }
+  --text: #0B2E33;
+  --muted: rgba(11, 46, 51, 0.70);
 
-  .subtle {
-    color: rgba(11, 46, 51, 0.75);
-    font-size: 13px;
-    margin-bottom: 12px;
-    line-height: 1.35;
-  }
+  --primary: #0B2E33;
+  --accent: #4F7C82;
+  --soft: #B8E3E9;
+  --soft2: #93B1B5;
 
-  .tableWrap {
-    background: rgba(184, 227, 233, 0.65);
-    border: 1px solid rgba(11, 46, 51, 0.18);
-    border-radius: 6px;
-    overflow: auto;
-    box-shadow: 0px 4px 12px rgba(11, 46, 51, 0.10);
-  }
+  --border: rgba(11, 46, 51, 0.14);
+  --border-strong: rgba(11, 46, 51, 0.22);
 
-  table {
-    border-collapse: collapse;
-    width: 100%;
-    min-width: 1100px;
-    font-size: 13px;
-  }
+  --shadow: 0 10px 30px rgba(11, 46, 51, 0.10);
+  --shadow-soft: 0 6px 16px rgba(11, 46, 51, 0.08);
+}
 
-  thead th {
-    background: rgba(184, 227, 233, 0.90);
-    color: #4F7C82;
-    font-weight: 800;
-    text-align: left;
-    padding: 10px 10px;
-    border-bottom: 2px solid rgba(11, 46, 51, 0.18);
-    border-right: 1px solid rgba(11, 46, 51, 0.12);
-    white-space: nowrap;
-  }
+* { box-sizing: border-box; }
 
-  tbody td {
-    padding: 8px 10px;
-    border-top: 1px solid rgba(11, 46, 51, 0.12);
-    border-right: 1px solid rgba(11, 46, 51, 0.12);
-    vertical-align: top;
-    background: rgba(184, 227, 233, 0.65);
-  }
+body {
+  font-family: Arial, sans-serif;
+  background: var(--bg);
+  margin: 0;
+  padding: 0;
+  color: var(--text);
+}
 
-  tbody tr:nth-child(even) td {
-    background: rgba(147, 177, 181, 0.22);
-  }
+/* Navbar (if used) */
+nav {
+  background: var(--primary);
+  padding: 12px;
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  border-bottom: 1px solid rgba(184, 227, 233, 0.18);
+}
+nav a {
+  color: var(--soft);
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 14px;
+  letter-spacing: 0.2px;
+  opacity: 0.95;
+}
+nav a:hover { text-decoration: underline; opacity: 1; }
 
-  input, select, textarea {
-    width: 100%;
-    font-size: 13px;
-    padding: 7px 8px;
-    border: 1px solid rgba(11, 46, 51, 0.20);
-    border-radius: 4px;
-    outline: none;
-    background: rgba(184, 227, 233, 0.85);
-    color: #0B2E33;
-  }
+/* Layout */
+.container {
+  max-width: 1200px;
+  margin: 26px auto;
+  padding: 14px 18px 34px;
+}
 
-  input:focus, select:focus, textarea:focus {
-    border-color: #4F7C82;
-    box-shadow: 0 0 0 3px rgba(147, 177, 181, 0.35);
-  }
+/* Header (more “telemetry console” feel) */
+h2 {
+  color: var(--primary);
+  margin: 0 0 10px;
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: 0.2px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+h2::before {
+  content: "📡";
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  background: rgba(184, 227, 233, 0.65);
+  border: 1px solid rgba(11, 46, 51, 0.12);
+  box-shadow: var(--shadow-soft);
+}
 
-  textarea {
-    min-height: 60px;
-    resize: vertical;
-    line-height: 1.3;
-  }
+.subtle {
+  color: var(--muted);
+  font-size: 13px;
+  margin-bottom: 14px;
+  line-height: 1.45;
+  padding: 12px 12px;
+  border: 1px solid rgba(11, 46, 51, 0.10);
+  border-radius: 12px;
+  background: rgba(184, 227, 233, 0.22);
+}
 
-  .sensorGrid {
-    display: grid;
-    grid-template-columns: 1fr 0.8fr;
-    gap: 8px;
-    align-items: center;
-  }
+/* Table wrapper */
+.tableWrap {
+  background: #ffffff;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  overflow: auto;
+  box-shadow: var(--shadow);
+  position: relative;
+}
 
-  .autoBar {
-    margin-top: 14px;
-    display: flex;
-    gap: 10px;
-    align-items: center;
-  }
+/* “Real time grid” subtle top bar */
+.tableWrap::before {
+  content: "";
+  position: sticky;
+  top: 0;
+  display: block;
+  height: 6px;
+  background: linear-gradient(90deg, var(--accent), rgba(147, 177, 181, 0.65), var(--accent));
+  opacity: 0.85;
+  z-index: 5;
+}
 
-  .autoPill {
-    background: #0B2E33;
-    color: #B8E3E9;
-    font-size: 12px;
-    font-weight: 800;
-    padding: 8px 12px;
-    border-radius: 999px;
-    white-space: nowrap;
-  }
+/* Table */
+table {
+  border-collapse: separate;
+  border-spacing: 0;
+  width: 100%;
+  min-width: 1100px;
+  font-size: 13px;
+}
 
-  .status {
-    font-size: 13px;
-    font-weight: 800;
-    display: none;
-    text-align: center;
-    padding: 10px;
-    border-radius: 10px;
-    flex: 1;
-  }
+/* Sticky header for “monitoring” feel */
+thead th {
+  position: sticky;
+  top: 6px; /* below .tableWrap::before bar */
+  z-index: 10;
 
-  /* Keeping semantic success/fail colors as-is for clarity */
-  .success {
-    background: #e6fff0;
-    color: #0a7a2f;
-    border: 1px solid #b7f0cc;
-  }
+  background: rgba(184, 227, 233, 0.55);
+  color: var(--primary);
+  font-weight: 900;
+  text-align: left;
+  padding: 12px 12px;
+  border-bottom: 1px solid var(--border-strong);
+  border-right: 1px solid rgba(11, 46, 51, 0.10);
+  white-space: nowrap;
+  backdrop-filter: blur(6px);
+}
 
-  .fail {
-    background: #ffecec;
-    color: #b30000;
-    border: 1px solid #ffbaba;
-  }
+/* Body cells */
+tbody td {
+  padding: 10px 12px;
+  border-top: 1px solid rgba(11, 46, 51, 0.08);
+  border-right: 1px solid rgba(11, 46, 51, 0.06);
+  vertical-align: top;
+  background: #ffffff;
+}
 
-  .smallNote {
-    font-size: 12px;
-    color: rgba(11, 46, 51, 0.70);
-    margin-top: 10px;
-    line-height: 1.35;
-  }
+/* Zebra stripes */
+tbody tr:nth-child(even) td {
+  background: rgba(184, 227, 233, 0.18);
+}
 
-  .exceededCell {
-    outline: 2px solid #0B2E33;
-    outline-offset: -2px;
-    background: rgba(147, 177, 181, 0.30) !important;
-  }
+/* Hover like real dashboards */
+tbody tr:hover td {
+  background: rgba(147, 177, 181, 0.22);
+}
 
-  .okCell {
-    outline: 2px solid #4F7C82;
-    outline-offset: -2px;
-    background: rgba(184, 227, 233, 0.85) !important;
-  }
+/* Inputs / selects */
+input, select, textarea {
+  width: 100%;
+  font-size: 13px;
+  padding: 9px 10px;
+  border: 1px solid rgba(11, 46, 51, 0.18);
+  border-radius: 10px;
+  outline: none;
+  background: #ffffff;
+  color: var(--text);
+  box-shadow: 0 1px 0 rgba(11, 46, 51, 0.03);
+}
+
+/* Telemetry-ish numeric look */
+input[type="number"],
+input[type="datetime-local"] {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Focus */
+input:focus, select:focus, textarea:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 4px rgba(79, 124, 130, 0.16);
+}
+
+/* Textarea */
+textarea {
+  min-height: 70px;
+  resize: vertical;
+  line-height: 1.35;
+}
+
+/* Sensor grid */
+.sensorGrid {
+  display: grid;
+  grid-template-columns: 1fr 0.8fr;
+  gap: 10px;
+  align-items: center;
+}
+
+/* Auto mode bar */
+.autoBar {
+  margin-top: 14px;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+/* Auto mode pill with “live” pulse */
+.autoPill {
+  background: var(--primary);
+  color: var(--soft);
+  font-size: 12px;
+  font-weight: 900;
+  padding: 9px 12px;
+  border-radius: 999px;
+  white-space: nowrap;
+  letter-spacing: 0.4px;
+  position: relative;
+  box-shadow: var(--shadow-soft);
+  border: 1px solid rgba(184, 227, 233, 0.18);
+}
+
+.autoPill::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: #36d399; /* green live dot */
+  display: inline-block;
+  margin-right: 8px;
+  box-shadow: 0 0 0 0 rgba(54, 211, 153, 0.5);
+  animation: pulse 1.6s infinite;
+  vertical-align: middle;
+}
+
+@keyframes pulse {
+  0%   { box-shadow: 0 0 0 0 rgba(54, 211, 153, 0.50); }
+  70%  { box-shadow: 0 0 0 10px rgba(54, 211, 153, 0.00); }
+  100% { box-shadow: 0 0 0 0 rgba(54, 211, 153, 0.00); }
+}
+
+/* Status boxes */
+.status {
+  font-size: 13px;
+  font-weight: 900;
+  display: none;
+  text-align: center;
+  padding: 10px 12px;
+  border-radius: 14px;
+  flex: 1;
+  box-shadow: var(--shadow-soft);
+}
+
+/* Keeping semantic success/fail colors as-is for clarity */
+.success {
+  background: #e6fff0;
+  color: #0a7a2f;
+  border: 1px solid #b7f0cc;
+}
+
+.fail {
+  background: #ffecec;
+  color: #b30000;
+  border: 1px solid #ffbaba;
+}
+
+/* Notes */
+.smallNote {
+  font-size: 12px;
+  color: rgba(11, 46, 51, 0.72);
+  margin-top: 10px;
+  line-height: 1.45;
+}
+
+/* Threshold highlight styling */
+.exceededCell {
+  outline: 2px solid var(--primary);
+  outline-offset: -2px;
+  background: rgba(147, 177, 181, 0.28) !important;
+}
+
+.okCell {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+  background: rgba(184, 227, 233, 0.22) !important;
+}
 </style>
 </head>
 
