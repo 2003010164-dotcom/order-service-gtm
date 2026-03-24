@@ -1,166 +1,591 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Telematics Data</title>
-
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Telematics Data</title>
+ 
   <style>
-  /* (UNCHANGED CSS — KEEPING AS IT IS) */
-  /* your full CSS remains same */
-  </style>
+  body {
+    font-family: Arial, sans-serif;
+    background: #ffffff;
+    margin: 0;
+    padding: 0;
+    color: #0B2E33;
+  }
+ 
+  /* Navbar */
+  /* --- Telematics UI: Real-time console look (CSS-only update) --- */
+ 
+:root {
+  --bg: #ffffff;
+ 
+  --text: #0B2E33;
+  --muted: rgba(11, 46, 51, 0.70);
+ 
+  --primary: #0B2E33;
+  --accent: #4F7C82;
+  --soft: #B8E3E9;
+  --soft2: #93B1B5;
+ 
+  --border: rgba(11, 46, 51, 0.14);
+  --border-strong: rgba(11, 46, 51, 0.22);
+ 
+  --shadow: 0 10px 30px rgba(11, 46, 51, 0.10);
+  --shadow-soft: 0 6px 16px rgba(11, 46, 51, 0.08);
+}
+ 
+* { box-sizing: border-box; }
+ 
+body {
+  font-family: Arial, sans-serif;
+  background: var(--bg);
+  margin: 0;
+  padding: 0;
+  color: var(--text);
+}
+ 
+/* Navbar (if used) */
+nav {
+  background: var(--primary);
+  padding: 12px;
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  border-bottom: 1px solid rgba(184, 227, 233, 0.18);
+}
+nav a {
+  color: var(--soft);
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 14px;
+  letter-spacing: 0.2px;
+  opacity: 0.95;
+}
+nav a:hover { text-decoration: underline; opacity: 1; }
+ 
+/* Layout */
+.container {
+  max-width: 1200px;
+  margin: 26px auto;
+  padding: 14px 18px 34px;
+}
+ 
+/* Header (more “telemetry console” feel) */
+h2 {
+  color: var(--primary);
+  margin: 0 0 10px;
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: 0.2px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+h2::before {
+  content: "📡";
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  background: rgba(184, 227, 233, 0.65);
+  border: 1px solid rgba(11, 46, 51, 0.12);
+  box-shadow: var(--shadow-soft);
+}
+ 
+.subtle {
+  color: var(--muted);
+  font-size: 13px;
+  margin-bottom: 14px;
+  line-height: 1.45;
+  padding: 12px 12px;
+  border: 1px solid rgba(11, 46, 51, 0.10);
+  border-radius: 12px;
+  background: rgba(184, 227, 233, 0.22);
+}
+ 
+/* Table wrapper */
+.tableWrap {
+  background: #ffffff;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  overflow: auto;
+  box-shadow: var(--shadow);
+  position: relative;
+}
+ 
+/* “Real time grid” subtle top bar */
+.tableWrap::before {
+  content: "";
+  position: sticky;
+  top: 0;
+  display: block;
+  height: 6px;
+  background: linear-gradient(90deg, var(--accent), rgba(147, 177, 181, 0.65), var(--accent));
+  opacity: 0.85;
+  z-index: 5;
+}
+ 
+/* Table */
+table {
+  border-collapse: separate;
+  border-spacing: 0;
+  width: 100%;
+  min-width: 1100px;
+  font-size: 13px;
+}
+ 
+/* Sticky header for “monitoring” feel */
+thead th {
+  position: sticky;
+  top: 6px; /* below .tableWrap::before bar */
+  z-index: 10;
+ 
+  background: rgba(184, 227, 233, 0.55);
+  color: var(--primary);
+  font-weight: 900;
+  text-align: left;
+  padding: 12px 12px;
+  border-bottom: 1px solid var(--border-strong);
+  border-right: 1px solid rgba(11, 46, 51, 0.10);
+  white-space: nowrap;
+  backdrop-filter: blur(6px);
+}
+ 
+/* Body cells */
+tbody td {
+  padding: 10px 12px;
+  border-top: 1px solid rgba(11, 46, 51, 0.08);
+  border-right: 1px solid rgba(11, 46, 51, 0.06);
+  vertical-align: top;
+  background: #ffffff;
+}
+ 
+/* Zebra stripes */
+tbody tr:nth-child(even) td {
+  background: rgba(184, 227, 233, 0.18);
+}
+ 
+/* Hover like real dashboards */
+tbody tr:hover td {
+  background: rgba(147, 177, 181, 0.22);
+}
+ 
+/* Inputs / selects */
+input, select, textarea {
+  width: 100%;
+  font-size: 13px;
+  padding: 9px 10px;
+  border: 1px solid rgba(11, 46, 51, 0.18);
+  border-radius: 10px;
+  outline: none;
+  background: #ffffff;
+  color: var(--text);
+  box-shadow: 0 1px 0 rgba(11, 46, 51, 0.03);
+}
+ 
+/* Telemetry-ish numeric look */
+input[type="number"],
+input[type="datetime-local"] {
+  font-variant-numeric: tabular-nums;
+}
+ 
+/* Focus */
+input:focus, select:focus, textarea:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 4px rgba(79, 124, 130, 0.16);
+}
+ 
+/* Textarea */
+textarea {
+  min-height: 70px;
+  resize: vertical;
+  line-height: 1.35;
+}
+ 
+/* Sensor grid */
+.sensorGrid {
+  display: grid;
+  grid-template-columns: 1fr 0.8fr;
+  gap: 10px;
+  align-items: center;
+}
+ 
+/* Auto mode bar */
+.autoBar {
+  margin-top: 14px;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+ 
+/* Auto mode pill with “live” pulse */
+.autoPill {
+  background: var(--primary);
+  color: var(--soft);
+  font-size: 12px;
+  font-weight: 900;
+  padding: 9px 12px;
+  border-radius: 999px;
+  white-space: nowrap;
+  letter-spacing: 0.4px;
+  position: relative;
+  box-shadow: var(--shadow-soft);
+  border: 1px solid rgba(184, 227, 233, 0.18);
+}
+ 
+.autoPill::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: #36d399; /* green live dot */
+  display: inline-block;
+  margin-right: 8px;
+  box-shadow: 0 0 0 0 rgba(54, 211, 153, 0.5);
+  animation: pulse 1.6s infinite;
+  vertical-align: middle;
+}
+ 
+@keyframes pulse {
+  0%   { box-shadow: 0 0 0 0 rgba(54, 211, 153, 0.50); }
+  70%  { box-shadow: 0 0 0 10px rgba(54, 211, 153, 0.00); }
+  100% { box-shadow: 0 0 0 0 rgba(54, 211, 153, 0.00); }
+}
+ 
+/* Status boxes */
+.status {
+  font-size: 13px;
+  font-weight: 900;
+  display: none;
+  text-align: center;
+  padding: 10px 12px;
+  border-radius: 14px;
+  flex: 1;
+  box-shadow: var(--shadow-soft);
+}
+ 
+/* Keeping semantic success/fail colors as-is for clarity */
+.success {
+  background: #e6fff0;
+  color: #0a7a2f;
+  border: 1px solid #b7f0cc;
+}
+ 
+.fail {
+  background: #ffecec;
+  color: #b30000;
+  border: 1px solid #ffbaba;
+}
+ 
+/* Notes */
+.smallNote {
+  font-size: 12px;
+  color: rgba(11, 46, 51, 0.72);
+  margin-top: 10px;
+  line-height: 1.45;
+}
+ 
+/* Threshold highlight styling */
+.exceededCell {
+  outline: 2px solid var(--primary);
+  outline-offset: -2px;
+  background: rgba(147, 177, 181, 0.28) !important;
+}
+ 
+.okCell {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+  background: rgba(184, 227, 233, 0.22) !important;
+}
+</style>
 </head>
-
+ 
 <body>
+
+ 
   <div class="container">
-    <h2>Telematics Data </h2>
-
-    <!-- ✅ UPDATED HEADER DESCRIPTION -->
-    <div class="subtle">
-      <b>Real-Time Telematics Monitoring:</b> This dashboard simulates live vehicle data streaming from onboard sensors (ECU).
-      Sensor values are continuously evaluated against predefined thresholds without manual submission.
-      <br/><br/>
-      If any parameter exceeds its threshold, the system automatically creates a <b>Telematics Event</b> and triggers a <b>Service Case</b> in Salesforce.
-      <br/><br/>
-      <b>Active Monitoring Thresholds:</b> Engine Temperature &gt; 30°C, RPM Spike &gt; 6000 RPM.
-      Predictive Maintenance events are auto-generated based on real-time data changes for proactive diagnostics.
-    </div>
-
+<h2>Telematics Data </h2>
+<div class="subtle">
+<b>No Submit button:</b> This page auto-checks thresholds instantly when you change values.
+      If the value exceeds threshold, it auto-sends to Salesforce and creates a <b>Telematic Event</b> + <b>Case</b>.
+<br/>
+      Thresholds (current): <b>EngineTempHigh &gt; 30</b>, <b>RPMSpike &gt; 6000</b>.
+      Predictive Maintenance auto-sends on change (for dashboard needle).
+</div>
+ 
     <div class="tableWrap">
-      <table>
-        <thead>
-          <tr>
-            <th>Vehicle__c</th>
-            <th>Event_Timestamp__c</th>
-            <th>Event_Type__c</th>
-            <th>Sensor_Value__c</th>
-            <th>Severity__c</th>
-            <th>Component__c</th>
-            <th>Recommended_Action__c</th>
-            <th>Status__c</th>
-          </tr>
-        </thead>
-
+<table>
+<thead>
+<tr>
+<th>Vehicle__c</th>
+<th>Event_Timestamp__c</th>
+<th>Event_Type__c</th>
+<th>Sensor_Value__c</th>
+<th>Severity__c</th>
+<th>Component__c</th>
+<th>Recommended_Action__c</th>
+<th>Status__c</th>
+</tr>
+</thead>
+ 
         <tbody>
-          <tr>
+<tr>
+<td>
+<input id="vehicleSerialNumber" value="<%= model.vehicleSerialNumber %>" />
+</td>
+ 
             <td>
-              <input id="vehicleSerialNumber" value="<%= model.vehicleSerialNumber %>" />
-            </td>
-
+<input id="eventTimestamp" type="datetime-local" value="<%= model.eventTimestamp %>" />
+</td>
+ 
             <td>
-              <input id="eventTimestamp" type="datetime-local" value="<%= model.eventTimestamp %>" />
-            </td>
-
-            <td>
-              <select id="eventType">
-                <option value="RPMSpike" <%= model.eventType === 'RPMSpike' ? 'selected' : '' %>>RPMSpike</option>
-                <option value="EngineTempHigh" <%= model.eventType === 'EngineTempHigh' ? 'selected' : '' %>>EngineTempHigh</option>
-                <option value="Predictive Maintenance" <%= model.eventType === 'Predictive Maintenance' ? 'selected' : '' %>>Predictive Maintenance</option>
-              </select>
-            </td>
-
+<select id="eventType">
+<option value="RPMSpike" <%= model.eventType === 'RPMSpike' ? 'selected' : '' %>>RPMSpike</option>
+<option value="EngineTempHigh" <%= model.eventType === 'EngineTempHigh' ? 'selected' : '' %>>EngineTempHigh</option>
+<option value="Predictive Maintenance" <%= model.eventType === 'Predictive Maintenance' ? 'selected' : '' %>>Predictive Maintenance</option>
+</select>
+</td>
+ 
             <td id="sensorCell">
-              <div class="sensorGrid">
-                <input id="sensorValueNumber" type="number" value="<%= model.sensorValueNumber %>" />
-                <input id="sensorUnit" value="<%= model.sensorUnit %>" />
-              </div>
-            </td>
-
+<div class="sensorGrid">
+<input id="sensorValueNumber" type="number" value="<%= model.sensorValueNumber %>" />
+<input id="sensorUnit" value="<%= model.sensorUnit %>" />
+</div>
+</td>
+ 
             <td>
-              <select id="severity">
-                <option value="Low" <%= model.severity === 'Low' ? 'selected' : '' %>>Low</option>
-                <option value="Medium" <%= model.severity === 'Medium' ? 'selected' : '' %>>Medium</option>
-                <option value="High" <%= model.severity === 'High' ? 'selected' : '' %>>High</option>
-                <option value="Critical" <%= model.severity === 'Critical' ? 'selected' : '' %>>Critical</option>
-              </select>
-            </td>
-
+<select id="severity">
+<option value="Low" <%= model.severity === 'Low' ? 'selected' : '' %>>Low</option>
+<option value="Medium" <%= model.severity === 'Medium' ? 'selected' : '' %>>Medium</option>
+<option value="High" <%= model.severity === 'High' ? 'selected' : '' %>>High</option>
+<option value="Critical" <%= model.severity === 'Critical' ? 'selected' : '' %>>Critical</option>
+</select>
+</td>
+ 
             <td>
-              <input id="component" value="<%= model.component %>" />
-            </td>
-
-            <!-- ✅ UPDATED RECOMMENDED ACTION -->
+<input id="component" value="<%= model.component %>" />
+</td>
+ 
             <td>
-              <input id="recommendedActionShort" value="<%= model.recommendedAction || 'Incident logged for analysis' %>" style="margin-bottom:8px;" />
-              <textarea id="recommendedAction"><%= model.recommendedAction || 'Detected abnormal vehicle behavior. This may indicate aggressive driving patterns or potential component stress. Further inspection is recommended if the condition persists.' %></textarea>
-            </td>
-
+<input id="recommendedActionShort" value="<%= model.recommendedAction %>" style="margin-bottom:8px;" />
+<textarea id="recommendedAction"><%= model.recommendedAction %></textarea>
+</td>
+ 
             <td>
-              <select id="status">
-                <option value="New" <%= model.status === 'New' ? 'selected' : '' %>>New</option>
-                <option value="In Progress" <%= model.status === 'In Progress' ? 'selected' : '' %>>In Progress</option>
-                <option value="Resolved" <%= model.status === 'Resolved' ? 'selected' : '' %>>Resolved</option>
-              </select>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-
-    <!-- ✅ UPDATED AUTO MODE -->
-    <div class="autoBar">
-      <div class="autoPill">REAL-TIME MONITORING: ACTIVE</div>
-
+<select id="status">
+<option value="New" <%= model.status === 'New' ? 'selected' : '' %>>New</option>
+<option value="In Progress" <%= model.status === 'In Progress' ? 'selected' : '' %>>In Progress</option>
+<option value="Resolved" <%= model.status === 'Resolved' ? 'selected' : '' %>>Resolved</option>
+</select>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+ 
+    <!-- Auto mode bar + live status -->
+<div class="autoBar">
+<div class="autoPill">AUTO MODE: ON</div>
+ 
       <div class="status success" id="successBox">✅</div>
-      <div class="status fail" id="failBox">❌</div>
-    </div>
-
+<div class="status fail" id="failBox">❌</div>
+</div>
+ 
     <div class="smallNote" id="resultText"></div>
-
-    <!-- ✅ UPDATED INSIGHTS SECTION -->
+ 
     <div class="smallNote">
-      <b>System Insights & Simulation Controls:</b>
-      <br/>• Increasing engine temperature beyond threshold will automatically trigger a diagnostic case.
-      <br/>• RPM values exceeding safe limits simulate high engine load or aggressive driving conditions.
-      <br/>• Predictive maintenance events are generated from continuous sensor data analysis.
-      <br/><br/>
-      This simulation reflects how real-world connected vehicle systems proactively detect, analyze, and respond to potential failures.
-    </div>
-  </div>
-
+      Tips:
+<br/>• EngineTempHigh: set <b>31</b> → should auto-create a Case.
+<br/>• RPMSpike: set <b>6001</b> → should auto-create a Case.
+<br/>• Predictive Maintenance: set <b>55</b> → auto-creates event (dashboard needle updates).
+</div>
+</div>
+ 
   <script>
-    // (UNCHANGED LOGIC — ONLY TEXT UPDATED BELOW)
-
+    // UI-side thresholds (same as Salesforce example)
+    const THRESHOLDS = {
+      EngineTempHigh: 30,
+      RPMSpike: 6000
+      // Predictive Maintenance: no threshold (always send to update dashboard needle)
+    };
+ 
+    // Debounce to avoid calling Salesforce on every keystroke
+    let debounceTimer = null;
+ 
+    // Prevent spamming Cases: only trigger when crossing from NOT exceeded -> exceeded
+    let lastExceeded = false;
+ 
+    // Avoid sending duplicate payload repeatedly
+    let lastSentSignature = "";
+ 
+    function el(id) { return document.getElementById(id); }
+ 
     function showStatus(type, message) {
-      const successBox = document.getElementById("successBox");
-      const failBox = document.getElementById("failBox");
-      const resultText = document.getElementById("resultText");
-
+      const successBox = el("successBox");
+      const failBox = el("failBox");
+      const resultText = el("resultText");
+ 
       successBox.style.display = "none";
       failBox.style.display = "none";
-
+ 
       if (type === "success") successBox.style.display = "block";
       if (type === "fail") failBox.style.display = "block";
-
+ 
       resultText.innerText = message || "";
     }
-
-    // ✅ UPDATED MESSAGES ONLY
-
-    // Replace messages inside your existing logic:
-
-    // Within threshold
-    // OLD → showStatus("success", `✅ Within threshold (<= ${t}). No auto-send.`);
-    // NEW:
-    // showStatus("success", `✅ All vehicle parameters are within normal operating range. No anomalies detected.`);
-
-    // Exceeded threshold
-    // OLD → auto-sent message
-    // NEW:
-    // `⚠️ Threshold breach detected (${payload.eventType} > ${t}). Event logged and case created for diagnostic action.`
-
-    // Still exceeded
-    // NEW:
-    // `⚠️ Parameter remains above safe operating limit. System is monitoring for further changes.`
-
-    // Predictive maintenance
-    // NEW:
-    // `📈 Predictive maintenance event generated based on live data trends. Sent to Salesforce for proactive analysis.`
-
-    // Unchanged predictive
-    // NEW:
-    // `📈 No significant change detected in predictive metrics.`
-
-  </script>
+ 
+    function buildPayload() {
+      return {
+        vehicleSerialNumber: el("vehicleSerialNumber").value.trim(),
+        eventTimestamp: el("eventTimestamp").value,
+        eventType: el("eventType").value,
+        sensorValueNumber: Number(el("sensorValueNumber").value || 0),
+        sensorUnit: el("sensorUnit").value.trim(),
+        severity: el("severity").value,
+        component: el("component").value.trim(),
+        recommendedAction: el("recommendedAction").value.trim(),
+        status: el("status").value
+      };
+    }
+ 
+    function thresholdFor(eventType) {
+      return THRESHOLDS[eventType]; // undefined for Predictive Maintenance
+    }
+ 
+    function signature(payload) {
+      return [
+        payload.vehicleSerialNumber,
+        payload.eventType,
+        payload.sensorValueNumber,
+        payload.sensorUnit,
+        payload.severity,
+        payload.component,
+        payload.status
+      ].join("|");
+    }
+ 
+    function updateSensorCellUI(state) {
+      const cell = el("sensorCell");
+      cell.classList.remove("exceededCell", "okCell");
+      if (state === "exceeded") cell.classList.add("exceededCell");
+      if (state === "ok") cell.classList.add("okCell");
+    }
+ 
+    async function sendToSalesforce(payload, reasonText) {
+      try {
+        const res = await fetch("/send-telemetry-to-crm", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+ 
+        const data = await res.json();
+ 
+        if (res.ok && data.success) {
+          let msg = reasonText || (data.message || "Sent");
+ 
+          if (data.telematicEventId) msg += " | Telematic Event: " + data.telematicEventId;
+          if (data.caseId) msg += " | Case: " + data.caseId;
+ 
+          showStatus("success", msg);
+        } else {
+          showStatus("fail", (data && (data.message || JSON.stringify(data))) || "Salesforce Error");
+          console.log("Salesforce Error:", data);
+        }
+      } catch (err) {
+        showStatus("fail", err.message);
+        console.log("Error:", err.message);
+      }
+    }
+ 
+    function onFieldChange() {
+      clearTimeout(debounceTimer);
+ 
+      debounceTimer = setTimeout(async () => {
+        const payload = buildPayload();
+        const t = thresholdFor(payload.eventType);
+ 
+        // Predictive Maintenance: always send on change (dashboard needle updates)
+        if (payload.eventType === "Predictive Maintenance") {
+          updateSensorCellUI(""); // no threshold styling
+ 
+          const sig = signature(payload);
+          if (sig !== lastSentSignature) {
+            lastSentSignature = sig;
+            lastExceeded = false;
+ 
+            await sendToSalesforce(payload, "📈 Predictive Maintenance changed → auto-sent to Salesforce.");
+          } else {
+            showStatus("success", "📈 Predictive Maintenance unchanged (not resent).");
+          }
+          return;
+        }
+ 
+        // No threshold defined for this event type
+        if (t === undefined || t === null) {
+          updateSensorCellUI("");
+          lastExceeded = false;
+          showStatus("success", "ℹ️ No threshold configured for this event type. Not auto-sending.");
+          return;
+        }
+ 
+        // Threshold defined: compare
+        const exceeded = payload.sensorValueNumber > t;
+ 
+        if (exceeded) {
+          updateSensorCellUI("exceeded");
+ 
+          // Trigger only on crossing to exceeded
+          if (!lastExceeded) {
+            lastExceeded = true;
+            const sig = signature(payload);
+ 
+            if (sig !== lastSentSignature) {
+              lastSentSignature = sig;
+              await sendToSalesforce(payload, `⚠️ Exceeded threshold (${payload.eventType} > ${t}) → auto-sent.`);
+            } else {
+              showStatus("success", `⚠️ Exceeded threshold (${payload.eventType} > ${t}) (already sent for same values).`);
+            }
+          } else {
+            showStatus("success", `⚠️ Still above threshold (${payload.eventType} > ${t}). Reduce below threshold then exceed again to create a new Case.`);
+          }
+        } else {
+          updateSensorCellUI("ok");
+          lastExceeded = false;
+          showStatus("success", `✅ Within threshold (<= ${t}). No auto-send.`);
+        }
+      }, 500); // 500ms debounce
+    }
+ 
+    window.addEventListener("load", () => {
+      const ids = [
+        "vehicleSerialNumber",
+        "eventTimestamp",
+        "eventType",
+        "sensorValueNumber",
+        "sensorUnit",
+        "severity",
+        "component",
+        "recommendedAction",
+        "status"
+      ];
+ 
+      ids.forEach(id => {
+        const element = el(id);
+        if (!element) return;
+        element.addEventListener("input", onFieldChange);
+        element.addEventListener("change", onFieldChange);
+      });
+ 
+      // Initial evaluation on load
+      onFieldChange();
+    });
+</script>
 </body>
 </html>
