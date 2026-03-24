@@ -6,332 +6,302 @@
   <title>Telematics Data</title>
 
   <style>
-  /* ===== Telematics UI (inspired by enterprise “connection + grid” screens) ===== */
-
-/* Theme tokens (still your palette, but arranged in SaaS-style neutrals) */
-:root{
-  --bg-app: #f5f7fb;              /* app background */
-  --panel: #ffffff;               /* white panels */
-  --text: #0B2E33;                /* strong text */
-  --muted: rgba(11,46,51,.70);    /* muted text */
-  --line: rgba(11,46,51,.12);     /* borders */
-  --line2: rgba(11,46,51,.18);    /* stronger borders */
-  --accent: #4F7C82;              /* accent */
-  --soft: #B8E3E9;                /* soft tint */
-  --soft2:#93B1B5;                /* secondary soft */
-  --shadow: 0 10px 26px rgba(11,46,51,.08);
-  --shadow2: 0 6px 14px rgba(11,46,51,.06);
+  body {
+    font-family: Arial, sans-serif;
+    background: #ffffff;
+    margin: 0;
+    padding: 0;
+    color: #0B2E33;
+  }
+ 
+  /* Navbar */
+  /* --- Telematics UI: Real-time console look (CSS-only update) --- */
+ 
+:root {
+  --bg: #ffffff;
+ 
+  --text: #0B2E33;
+  --muted: rgba(11, 46, 51, 0.70);
+ 
+  --primary: #0B2E33;
+  --accent: #4F7C82;
+  --soft: #B8E3E9;
+  --soft2: #93B1B5;
+ 
+  --border: rgba(11, 46, 51, 0.14);
+  --border-strong: rgba(11, 46, 51, 0.22);
+ 
+  --shadow: 0 10px 30px rgba(11, 46, 51, 0.10);
+  --shadow-soft: 0 6px 16px rgba(11, 46, 51, 0.08);
 }
-
-*{ box-sizing:border-box; }
-
-body{
+ 
+* { box-sizing: border-box; }
+ 
+body {
   font-family: Arial, sans-serif;
-  background: var(--bg-app);
+  background: var(--bg);
   margin: 0;
   padding: 0;
   color: var(--text);
 }
-
-/* Keep navbar styling if you later enable it */
-nav{
-  background: #0B2E33;
+ 
+/* Navbar (if used) */
+nav {
+  background: var(--primary);
   padding: 12px;
-  display:flex;
-  justify-content:center;
-  gap:30px;
+  display: flex;
+  justify-content: center;
+  gap: 30px;
   position: sticky;
   top: 0;
-  z-index: 50;
-  border-bottom: 1px solid rgba(184,227,233,.16);
+  z-index: 30;
+  border-bottom: 1px solid rgba(184, 227, 233, 0.18);
 }
-nav a{
-  color: #B8E3E9;
-  text-decoration:none;
-  font-weight:700;
-  font-size:14px;
+nav a {
+  color: var(--soft);
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 14px;
+  letter-spacing: 0.2px;
+  opacity: 0.95;
 }
-nav a:hover{ text-decoration:underline; }
-
-/* Container becomes a “details panel + data grid” layout */
-.container{
-  max-width: 1220px;
-  margin: 22px auto;
-  padding: 12px 16px 28px;
-
-  display: grid;
-  grid-template-columns: 330px 1fr;
-  gap: 14px;
-  align-items: start;
+nav a:hover { text-decoration: underline; opacity: 1; }
+ 
+/* Layout */
+.container {
+  max-width: 1200px;
+  margin: 26px auto;
+  padding: 14px 18px 34px;
 }
-
-/* Title like a SaaS page heading */
-h2{
-  grid-column: 1 / -1;
-  margin: 0 0 6px;
-  font-size: 18px;
-  font-weight: 900;
-  letter-spacing: .2px;
-  color: var(--text);
-  display:flex;
-  align-items:center;
-  gap:10px;
+ 
+/* Header (more “telemetry console” feel) */
+h2 {
+  color: var(--primary);
+  margin: 0 0 10px;
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: 0.2px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
-h2::before{
-  content:"";
-  width:10px;
-  height:10px;
-  border-radius: 50%;
-  background: #38c172;              /* live dot feel */
-  box-shadow: 0 0 0 4px rgba(56,193,114,.14);
-  display:inline-block;
-}
-
-/* Left “Connection details” card (uses your .subtle block) */
-.subtle{
-  grid-column: 1;
-  margin: 0;
-  padding: 14px 14px;
-
-  border: 1px solid var(--line);
+h2::before {
+  content: "📡";
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
   border-radius: 10px;
-  background: var(--panel);
-  box-shadow: var(--shadow2);
-
-  font-size: 12.5px;
-  line-height: 1.45;
+  background: rgba(184, 227, 233, 0.65);
+  border: 1px solid rgba(11, 46, 51, 0.12);
+  box-shadow: var(--shadow-soft);
+}
+ 
+.subtle {
   color: var(--muted);
-
-  position: relative;
-}
-.subtle b{ color: var(--text); }
-
-/* Make the left card feel like a “Connection: …” panel header */
-.subtle::before{
-  content: "Connection Details";
-  display:block;
-  font-size: 11px;
-  font-weight: 900;
-  letter-spacing: .5px;
-  text-transform: uppercase;
-  color: rgba(11,46,51,.55);
-  margin-bottom: 10px;
-}
-
-/* Auto bar sits under the left panel */
-.autoBar{
-  grid-column: 1;
-  margin-top: 0;
-  display:flex;
-  gap:10px;
-  align-items:center;
-
-  padding: 12px 12px;
-  border: 1px solid var(--line);
-  border-radius: 10px;
-  background: var(--panel);
-  box-shadow: var(--shadow2);
-}
-
-/* Auto pill becomes a “toggle-like” label */
-.autoPill{
-  background: rgba(11,46,51,.92);
-  color: #fff;
-  font-size: 11px;
-  font-weight: 900;
-  padding: 8px 10px;
-  border-radius: 999px;
-  white-space: nowrap;
-  letter-spacing: .4px;
-  display:flex;
-  align-items:center;
-  gap:8px;
-}
-.autoPill::before{
-  content:"";
-  width:8px;
-  height:8px;
-  border-radius:50%;
-  background:#38c172;
-  box-shadow: 0 0 0 0 rgba(56,193,114,.45);
-  animation: pulse 1.6s infinite;
-}
-@keyframes pulse{
-  0%{ box-shadow:0 0 0 0 rgba(56,193,114,.45); }
-  70%{ box-shadow:0 0 0 10px rgba(56,193,114,0); }
-  100%{ box-shadow:0 0 0 0 rgba(56,193,114,0); }
-}
-
-/* Status boxes align nicely inside auto bar */
-.status{
-  font-size: 12px;
-  font-weight: 900;
-  display:none;
-  text-align:center;
-  padding: 9px 10px;
-  border-radius: 10px;
-  flex: 1;
-}
-
-/* Keep your semantic colors for success/fail */
-.success{
-  background:#e6fff0;
-  color:#0a7a2f;
-  border:1px solid #b7f0cc;
-}
-.fail{
-  background:#ffecec;
-  color:#b30000;
-  border:1px solid #ffbaba;
-}
-
-/* Notes on left side (like “help / tips” section) */
-.smallNote{
-  grid-column: 1;
-  font-size: 12px;
-  color: rgba(11,46,51,.70);
+  font-size: 13px;
+  margin-bottom: 14px;
   line-height: 1.45;
-
   padding: 12px 12px;
-  border: 1px solid var(--line);
-  border-radius: 10px;
-  background: var(--panel);
-  box-shadow: var(--shadow2);
+  border: 1px solid rgba(11, 46, 51, 0.10);
+  border-radius: 12px;
+  background: rgba(184, 227, 233, 0.22);
 }
-
-/* Make the resultText feel like a live status log */
-#resultText{
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
-  color: rgba(11,46,51,.78);
-}
-
-/* Right panel: “data grid” */
-.tableWrap{
-  grid-column: 2;
-  grid-row: 2 / span 6; /* table spans alongside the left cards */
-  background: var(--panel);
-  border: 1px solid var(--line);
-  border-radius: 10px;
+ 
+/* Table wrapper */
+.tableWrap {
+  background: #ffffff;
+  border: 1px solid var(--border);
+  border-radius: 14px;
   overflow: auto;
   box-shadow: var(--shadow);
   position: relative;
 }
-
-/* Data grid top padding (like toolbar spacing, without adding HTML) */
-.tableWrap{
-  padding-top: 6px;
+ 
+/* “Real time grid” subtle top bar */
+.tableWrap::before {
+  content: "";
+  position: sticky;
+  top: 0;
+  display: block;
+  height: 6px;
+  background: linear-gradient(90deg, var(--accent), rgba(147, 177, 181, 0.65), var(--accent));
+  opacity: 0.85;
+  z-index: 5;
 }
-
-/* Table styling like enterprise grids */
-table{
+ 
+/* Table */
+table {
   border-collapse: separate;
   border-spacing: 0;
   width: 100%;
   min-width: 1100px;
-  font-size: 12.5px;
+  font-size: 13px;
 }
-
-/* Sticky header like the inspiration grid */
-thead th{
+ 
+/* Sticky header for “monitoring” feel */
+thead th {
   position: sticky;
-  top: 0;
+  top: 6px; /* below .tableWrap::before bar */
   z-index: 10;
-
-  background: #ffffff;
-  color: rgba(11,46,51,.85);
+ 
+  background: rgba(184, 227, 233, 0.55);
+  color: var(--primary);
   font-weight: 900;
   text-align: left;
-  padding: 10px 12px;
-
-  border-bottom: 1px solid var(--line2);
-  border-right: 1px solid rgba(11,46,51,.08);
+  padding: 12px 12px;
+  border-bottom: 1px solid var(--border-strong);
+  border-right: 1px solid rgba(11, 46, 51, 0.10);
   white-space: nowrap;
+  backdrop-filter: blur(6px);
 }
-
-/* Subtle “blue-ish” header accent line */
-thead th:first-child{
-  border-left: 3px solid var(--accent);
-}
-
-/* Body cells + row lines */
-tbody td{
+ 
+/* Body cells */
+tbody td {
   padding: 10px 12px;
-  border-top: 1px solid rgba(11,46,51,.06);
-  border-right: 1px solid rgba(11,46,51,.05);
-  vertical-align: middle;
-  background: #fff;
+  border-top: 1px solid rgba(11, 46, 51, 0.08);
+  border-right: 1px solid rgba(11, 46, 51, 0.06);
+  vertical-align: top;
+  background: #ffffff;
 }
-
-/* Zebra striping similar to SaaS tables */
-tbody tr:nth-child(even) td{
-  background: rgba(245,247,251,.9);
+ 
+/* Zebra stripes */
+tbody tr:nth-child(even) td {
+  background: rgba(184, 227, 233, 0.18);
 }
-
-/* Hover row */
-tbody tr:hover td{
-  background: rgba(184,227,233,.18);
+ 
+/* Hover like real dashboards */
+tbody tr:hover td {
+  background: rgba(147, 177, 181, 0.22);
 }
-
-/* Form controls look like grid editors */
-input, select, textarea{
+ 
+/* Inputs / selects */
+input, select, textarea {
   width: 100%;
-  font-size: 12.5px;
-  padding: 8px 9px;
-  border: 1px solid rgba(11,46,51,.14);
-  border-radius: 6px;
+  font-size: 13px;
+  padding: 9px 10px;
+  border: 1px solid rgba(11, 46, 51, 0.18);
+  border-radius: 10px;
   outline: none;
   background: #ffffff;
   color: var(--text);
+  box-shadow: 0 1px 0 rgba(11, 46, 51, 0.03);
 }
-
-/* Numeric alignment like telemetry consoles */
+ 
+/* Telemetry-ish numeric look */
 input[type="number"],
-input[type="datetime-local"]{
+input[type="datetime-local"] {
   font-variant-numeric: tabular-nums;
 }
-
-/* Focus style */
-input:focus, select:focus, textarea:focus{
+ 
+/* Focus */
+input:focus, select:focus, textarea:focus {
   border-color: var(--accent);
-  box-shadow: 0 0 0 3px rgba(79,124,130,.16);
+  box-shadow: 0 0 0 4px rgba(79, 124, 130, 0.16);
 }
-
+ 
 /* Textarea */
-textarea{
+textarea {
   min-height: 70px;
   resize: vertical;
   line-height: 1.35;
 }
-
-/* Sensor cell grid stays intact but looks tighter */
-.sensorGrid{
-  display:grid;
-  grid-template-columns: 1fr .85fr;
-  gap: 8px;
-  align-items:center;
+ 
+/* Sensor grid */
+.sensorGrid {
+  display: grid;
+  grid-template-columns: 1fr 0.8fr;
+  gap: 10px;
+  align-items: center;
 }
-
-/* Threshold highlights: look like “flagged row/cell” */
-.exceededCell{
-  outline: 2px solid rgba(179,0,0,.65);
+ 
+/* Auto mode bar */
+.autoBar {
+  margin-top: 14px;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+ 
+/* Auto mode pill with “live” pulse */
+.autoPill {
+  background: var(--primary);
+  color: var(--soft);
+  font-size: 12px;
+  font-weight: 900;
+  padding: 9px 12px;
+  border-radius: 999px;
+  white-space: nowrap;
+  letter-spacing: 0.4px;
+  position: relative;
+  box-shadow: var(--shadow-soft);
+  border: 1px solid rgba(184, 227, 233, 0.18);
+}
+ 
+.autoPill::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: #36d399; /* green live dot */
+  display: inline-block;
+  margin-right: 8px;
+  box-shadow: 0 0 0 0 rgba(54, 211, 153, 0.5);
+  animation: pulse 1.6s infinite;
+  vertical-align: middle;
+}
+ 
+@keyframes pulse {
+  0%   { box-shadow: 0 0 0 0 rgba(54, 211, 153, 0.50); }
+  70%  { box-shadow: 0 0 0 10px rgba(54, 211, 153, 0.00); }
+  100% { box-shadow: 0 0 0 0 rgba(54, 211, 153, 0.00); }
+}
+ 
+/* Status boxes */
+.status {
+  font-size: 13px;
+  font-weight: 900;
+  display: none;
+  text-align: center;
+  padding: 10px 12px;
+  border-radius: 14px;
+  flex: 1;
+  box-shadow: var(--shadow-soft);
+}
+ 
+/* Keeping semantic success/fail colors as-is for clarity */
+.success {
+  background: #e6fff0;
+  color: #0a7a2f;
+  border: 1px solid #b7f0cc;
+}
+ 
+.fail {
+  background: #ffecec;
+  color: #b30000;
+  border: 1px solid #ffbaba;
+}
+ 
+/* Notes */
+.smallNote {
+  font-size: 12px;
+  color: rgba(11, 46, 51, 0.72);
+  margin-top: 10px;
+  line-height: 1.45;
+}
+ 
+/* Threshold highlight styling */
+.exceededCell {
+  outline: 2px solid var(--primary);
   outline-offset: -2px;
-  background: rgba(255,236,236,.70) !important;
+  background: rgba(147, 177, 181, 0.28) !important;
 }
-.okCell{
-  outline: 2px solid rgba(10,122,47,.55);
+ 
+.okCell {
+  outline: 2px solid var(--accent);
   outline-offset: -2px;
-  background: rgba(230,255,240,.80) !important;
-}
-
-/* Responsive: stack panels on small screens */
-@media (max-width: 980px){
-  .container{
-    grid-template-columns: 1fr;
-  }
-  .tableWrap{
-    grid-column: 1;
-    grid-row: auto;
-  }
+  background: rgba(184, 227, 233, 0.22) !important;
 }
 </style>
 </head>
