@@ -1,412 +1,996 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Telematics Data</title>
- 
-  <style>
-  body {
-    font-family: Arial, sans-serif;
-    background: #ffffff;
-    margin: 0;
-    padding: 0;
-    color: #0B2E33;
-  }
- 
-  /* Navbar */
-  /* --- Telematics UI: Real-time console look (CSS-only update) --- */
- 
-:root {
-  --bg: #ffffff;
- 
-  --text: #0B2E33;
-  --muted: rgba(11, 46, 51, 0.70);
- 
-  --primary: #0B2E33;
-  --accent: #4F7C82;
-  --soft: #B8E3E9;
-  --soft2: #93B1B5;
- 
-  --border: rgba(11, 46, 51, 0.14);
-  --border-strong: rgba(11, 46, 51, 0.22);
- 
-  --shadow: 0 10px 30px rgba(11, 46, 51, 0.10);
-  --shadow-soft: 0 6px 16px rgba(11, 46, 51, 0.08);
-}
- 
-* { box-sizing: border-box; }
- 
-body {
-  font-family: Arial, sans-serif;
-  background: var(--bg);
-  margin: 0;
-  padding: 0;
-  color: var(--text);
-}
- 
-/* Navbar (if used) */
-nav {
-  background: var(--primary);
-  padding: 12px;
-  display: flex;
-  justify-content: center;
-  gap: 30px;
-  position: sticky;
-  top: 0;
-  z-index: 30;
-  border-bottom: 1px solid rgba(184, 227, 233, 0.18);
-}
-nav a {
-  color: var(--soft);
-  text-decoration: none;
-  font-weight: 700;
-  font-size: 14px;
-  letter-spacing: 0.2px;
-  opacity: 0.95;
-}
-nav a:hover { text-decoration: underline; opacity: 1; }
- 
-/* Layout */
-.container {
-  max-width: 1200px;
-  margin: 26px auto;
-  padding: 14px 18px 34px;
-}
- 
-/* Header (more “telemetry console” feel) */
-h2 {
-  color: var(--primary);
-  margin: 0 0 10px;
-  font-size: 22px;
-  font-weight: 800;
-  letter-spacing: 0.2px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-h2::before {
-  content: "📡";
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 34px;
-  height: 34px;
-  border-radius: 10px;
-  background: rgba(184, 227, 233, 0.65);
-  border: 1px solid rgba(11, 46, 51, 0.12);
-  box-shadow: var(--shadow-soft);
-}
- 
-.subtle {
-  color: var(--muted);
-  font-size: 13px;
-  margin-bottom: 14px;
-  line-height: 1.45;
-  padding: 12px 12px;
-  border: 1px solid rgba(11, 46, 51, 0.10);
-  border-radius: 12px;
-  background: rgba(184, 227, 233, 0.22);
-}
- 
-/* Table wrapper */
-.tableWrap {
-  background: #ffffff;
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  overflow: auto;
-  box-shadow: var(--shadow);
-  position: relative;
-}
- 
-/* “Real time grid” subtle top bar */
-.tableWrap::before {
-  content: "";
-  position: sticky;
-  top: 0;
-  display: block;
-  height: 6px;
-  background: linear-gradient(90deg, var(--accent), rgba(147, 177, 181, 0.65), var(--accent));
-  opacity: 0.85;
-  z-index: 5;
-}
- 
-/* Table */
-table {
-  border-collapse: separate;
-  border-spacing: 0;
-  width: 100%;
-  min-width: 1100px;
-  font-size: 13px;
-}
- 
-/* Sticky header for “monitoring” feel */
-thead th {
-  position: sticky;
-  top: 6px; /* below .tableWrap::before bar */
-  z-index: 10;
- 
-  background: rgba(184, 227, 233, 0.55);
-  color: var(--primary);
-  font-weight: 900;
-  text-align: left;
-  padding: 12px 12px;
-  border-bottom: 1px solid var(--border-strong);
-  border-right: 1px solid rgba(11, 46, 51, 0.10);
-  white-space: nowrap;
-  backdrop-filter: blur(6px);
-}
- 
-/* Body cells */
-tbody td {
-  padding: 10px 12px;
-  border-top: 1px solid rgba(11, 46, 51, 0.08);
-  border-right: 1px solid rgba(11, 46, 51, 0.06);
-  vertical-align: top;
-  background: #ffffff;
-}
- 
-/* Zebra stripes */
-tbody tr:nth-child(even) td {
-  background: rgba(184, 227, 233, 0.18);
-}
- 
-/* Hover like real dashboards */
-tbody tr:hover td {
-  background: rgba(147, 177, 181, 0.22);
-}
- 
-/* Inputs / selects */
-input, select, textarea {
-  width: 100%;
-  font-size: 13px;
-  padding: 9px 10px;
-  border: 1px solid rgba(11, 46, 51, 0.18);
-  border-radius: 10px;
-  outline: none;
-  background: #ffffff;
-  color: var(--text);
-  box-shadow: 0 1px 0 rgba(11, 46, 51, 0.03);
-}
- 
-/* Telemetry-ish numeric look */
-input[type="number"],
-input[type="datetime-local"] {
-  font-variant-numeric: tabular-nums;
-}
- 
-/* Focus */
-input:focus, select:focus, textarea:focus {
-  border-color: var(--accent);
-  box-shadow: 0 0 0 4px rgba(79, 124, 130, 0.16);
-}
- 
-/* Textarea */
-textarea {
-  min-height: 70px;
-  resize: vertical;
-  line-height: 1.35;
-}
- 
-/* Sensor grid */
-.sensorGrid {
-  display: grid;
-  grid-template-columns: 1fr 0.8fr;
-  gap: 10px;
-  align-items: center;
-}
- 
-/* Auto mode bar */
-.autoBar {
-  margin-top: 14px;
-  display: flex;
-  gap: 10px;
-  align-items: center;
-}
- 
-/* Auto mode pill with “live” pulse */
-.autoPill {
-  background: var(--primary);
-  color: var(--soft);
-  font-size: 12px;
-  font-weight: 900;
-  padding: 9px 12px;
-  border-radius: 999px;
-  white-space: nowrap;
-  letter-spacing: 0.4px;
-  position: relative;
-  box-shadow: var(--shadow-soft);
-  border: 1px solid rgba(184, 227, 233, 0.18);
-}
- 
-.autoPill::before {
-  content: "";
-  width: 8px;
-  height: 8px;
-  border-radius: 999px;
-  background: #36d399; /* green live dot */
-  display: inline-block;
-  margin-right: 8px;
-  box-shadow: 0 0 0 0 rgba(54, 211, 153, 0.5);
-  animation: pulse 1.6s infinite;
-  vertical-align: middle;
-}
- 
-@keyframes pulse {
-  0%   { box-shadow: 0 0 0 0 rgba(54, 211, 153, 0.50); }
-  70%  { box-shadow: 0 0 0 10px rgba(54, 211, 153, 0.00); }
-  100% { box-shadow: 0 0 0 0 rgba(54, 211, 153, 0.00); }
-}
- 
-/* Status boxes */
-.status {
-  font-size: 13px;
-  font-weight: 900;
-  display: none;
-  text-align: center;
-  padding: 10px 12px;
-  border-radius: 14px;
-  flex: 1;
-  box-shadow: var(--shadow-soft);
-}
- 
-/* Keeping semantic success/fail colors as-is for clarity */
-.success {
-  background: #e6fff0;
-  color: #0a7a2f;
-  border: 1px solid #b7f0cc;
-}
- 
-.fail {
-  background: #ffecec;
-  color: #b30000;
-  border: 1px solid #ffbaba;
-}
- 
-/* Notes */
-.smallNote {
-  font-size: 12px;
-  color: rgba(11, 46, 51, 0.72);
-  margin-top: 10px;
-  line-height: 1.45;
-}
- 
-/* Threshold highlight styling */
-.exceededCell {
-  outline: 2px solid var(--primary);
-  outline-offset: -2px;
-  background: rgba(147, 177, 181, 0.28) !important;
-}
- 
-.okCell {
-  outline: 2px solid var(--accent);
-  outline-offset: -2px;
-  background: rgba(184, 227, 233, 0.22) !important;
-}
-</style>
-</head>
- 
-<body>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Telematics Data</title>
 
- 
-  <div class="container">
-<h2>Telematics Data </h2>
-<div class="subtle">
-<b>No Submit button:</b> This page auto-checks thresholds instantly when you change values.
-      If the value exceeds threshold, it auto-sends to Salesforce and creates a <b>Telematic Event</b> + <b>Case</b>.
-<br/>
-      Thresholds (current): <b>EngineTempHigh &gt; 30</b>, <b>RPMSpike &gt; 6000</b>.
-      Predictive Maintenance auto-sends on change (for dashboard needle).
-</div>
- 
-    <div class="tableWrap">
-<table>
-<thead>
-<tr>
-<th>Vehicle__c</th>
-<th>Event_Timestamp__c</th>
-<th>Event_Type__c</th>
-<th>Sensor_Value__c</th>
-<th>Severity__c</th>
-<th>Component__c</th>
-<th>Recommended_Action__c</th>
-<th>Status__c</th>
-</tr>
-</thead>
- 
-        <tbody>
-<tr>
-<td>
-<input id="vehicleSerialNumber" value="<%= model.vehicleSerialNumber %>" />
-</td>
- 
-            <td>
-<input id="eventTimestamp" type="datetime-local" value="<%= model.eventTimestamp %>" />
-</td>
- 
-            <td>
-<select id="eventType">
-<option value="RPMSpike" <%= model.eventType === 'RPMSpike' ? 'selected' : '' %>>RPMSpike</option>
-<option value="EngineTempHigh" <%= model.eventType === 'EngineTempHigh' ? 'selected' : '' %>>EngineTempHigh</option>
-<option value="Predictive Maintenance" <%= model.eventType === 'Predictive Maintenance' ? 'selected' : '' %>>Predictive Maintenance</option>
-</select>
-</td>
- 
-            <td id="sensorCell">
-<div class="sensorGrid">
-<input id="sensorValueNumber" type="number" value="<%= model.sensorValueNumber %>" />
-<input id="sensorUnit" value="<%= model.sensorUnit %>" />
-</div>
-</td>
- 
-            <td>
-<select id="severity">
-<option value="Low" <%= model.severity === 'Low' ? 'selected' : '' %>>Low</option>
-<option value="Medium" <%= model.severity === 'Medium' ? 'selected' : '' %>>Medium</option>
-<option value="High" <%= model.severity === 'High' ? 'selected' : '' %>>High</option>
-<option value="Critical" <%= model.severity === 'Critical' ? 'selected' : '' %>>Critical</option>
-</select>
-</td>
- 
-            <td>
-<input id="component" value="<%= model.component %>" />
-</td>
- 
-            <td>
-<input id="recommendedActionShort" value="<%= model.recommendedAction %>" style="margin-bottom:8px;" />
-<textarea id="recommendedAction"><%= model.recommendedAction %></textarea>
-</td>
- 
-            <td>
-<select id="status">
-<option value="New" <%= model.status === 'New' ? 'selected' : '' %>>New</option>
-<option value="In Progress" <%= model.status === 'In Progress' ? 'selected' : '' %>>In Progress</option>
-<option value="Resolved" <%= model.status === 'Resolved' ? 'selected' : '' %>>Resolved</option>
-</select>
-</td>
-</tr>
-</tbody>
-</table>
-</div>
- 
-    <!-- Auto mode bar + live status -->
-<div class="autoBar">
-<div class="autoPill">AUTO MODE: ON</div>
- 
-      <div class="status success" id="successBox">✅</div>
-<div class="status fail" id="failBox">❌</div>
-</div>
- 
-    <div class="smallNote" id="resultText"></div>
- 
-    <div class="smallNote">
-      Tips:
-<br/>• EngineTempHigh: set <b>31</b> → should auto-create a Case.
-<br/>• RPMSpike: set <b>6001</b> → should auto-create a Case.
-<br/>• Predictive Maintenance: set <b>55</b> → auto-creates event (dashboard needle updates).
-</div>
-</div>
- 
+  <style>
+    :root {
+      --bg: #edf3f7;
+      --panel: #ffffff;
+      --panel-soft: #f7fbfd;
+      --primary: #17314f;
+      --primary-2: #244a70;
+      --accent: #46a8be;
+      --accent-soft: #bfe7ee;
+      --text: #17323f;
+      --muted: #6b828f;
+      --border: rgba(23, 50, 63, 0.10);
+      --border-strong: rgba(23, 50, 63, 0.18);
+      --success: #148a41;
+      --danger: #c62828;
+      --shadow-lg: 0 18px 40px rgba(20, 45, 62, 0.10);
+      --shadow-md: 0 10px 24px rgba(20, 45, 62, 0.08);
+      --shadow-sm: 0 4px 12px rgba(20, 45, 62, 0.06);
+      --radius-xl: 22px;
+      --radius-lg: 18px;
+      --radius-md: 14px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(70, 168, 190, 0.10), transparent 28%),
+        radial-gradient(circle at top right, rgba(36, 74, 112, 0.10), transparent 20%),
+        linear-gradient(180deg, #f5f9fc 0%, #edf3f7 100%);
+      color: var(--text);
+    }
+
+    body {
+      min-height: 100vh;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 40;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      padding: 14px 24px;
+      background: linear-gradient(135deg, var(--primary) 0%, #10263c 100%);
+      color: #fff;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      box-shadow: 0 10px 22px rgba(16, 38, 60, 0.18);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .brandBadge {
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, rgba(255,255,255,0.16), rgba(255,255,255,0.06));
+      border: 1px solid rgba(255,255,255,0.14);
+      font-size: 20px;
+      flex-shrink: 0;
+    }
+
+    .brandText {
+      min-width: 0;
+    }
+
+    .brandTitle {
+      font-size: 18px;
+      font-weight: 800;
+      letter-spacing: 0.3px;
+      white-space: nowrap;
+    }
+
+    .brandSub {
+      font-size: 12px;
+      color: rgba(226, 240, 245, 0.86);
+      margin-top: 2px;
+      white-space: nowrap;
+    }
+
+    .topStats {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .topChip {
+      padding: 9px 12px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+      color: #dcecf3;
+      background: rgba(255,255,255,0.10);
+      border: 1px solid rgba(255,255,255,0.12);
+      backdrop-filter: blur(6px);
+      white-space: nowrap;
+    }
+
+    .topChip.live::before {
+      content: "";
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: #39d98a;
+      margin-right: 8px;
+      vertical-align: middle;
+      box-shadow: 0 0 0 0 rgba(57, 217, 138, 0.45);
+      animation: pulse 1.8s infinite;
+    }
+
+    @keyframes pulse {
+      0% { box-shadow: 0 0 0 0 rgba(57, 217, 138, 0.45); }
+      70% { box-shadow: 0 0 0 10px rgba(57, 217, 138, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(57, 217, 138, 0); }
+    }
+
+    .page {
+      max-width: 1380px;
+      margin: 0 auto;
+      padding: 26px 22px 38px;
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: 1.25fr 0.75fr;
+      gap: 18px;
+      margin-bottom: 18px;
+    }
+
+    .heroCard,
+    .noteCard,
+    .panel,
+    .sideCard {
+      background: linear-gradient(180deg, #ffffff 0%, #f8fcfe 100%);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .heroCard {
+      padding: 24px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .heroCard::after {
+      content: "";
+      position: absolute;
+      right: -40px;
+      top: -40px;
+      width: 180px;
+      height: 180px;
+      border-radius: 999px;
+      background: radial-gradient(circle, rgba(70, 168, 190, 0.18), transparent 70%);
+      pointer-events: none;
+    }
+
+    .heroTitle {
+      margin: 0;
+      font-size: 30px;
+      font-weight: 800;
+      line-height: 1.15;
+      color: var(--primary);
+      letter-spacing: 0.2px;
+    }
+
+    .heroText {
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.65;
+      max-width: 92%;
+    }
+
+    .heroPills {
+      margin-top: 18px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .pill {
+      padding: 10px 14px;
+      border-radius: 999px;
+      background: #f1f7fa;
+      border: 1px solid rgba(23, 50, 63, 0.10);
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    .heroRight {
+      display: grid;
+      gap: 18px;
+    }
+
+    .noteCard {
+      padding: 18px;
+    }
+
+    .noteCard h3 {
+      margin: 0 0 8px;
+      color: var(--primary);
+      font-size: 15px;
+      font-weight: 800;
+    }
+
+    .noteCard p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .kpiGrid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 16px;
+      margin-bottom: 18px;
+    }
+
+    .kpiCard {
+      position: relative;
+      overflow: hidden;
+      border-radius: 18px;
+      color: #fff;
+      padding: 18px;
+      min-height: 118px;
+      box-shadow: var(--shadow-md);
+    }
+
+    .kpiCard::after {
+      content: "";
+      position: absolute;
+      right: -22px;
+      bottom: -32px;
+      width: 118px;
+      height: 118px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.12);
+    }
+
+    .kpiLabel {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.45px;
+      font-weight: 700;
+      opacity: 0.92;
+    }
+
+    .kpiValue {
+      margin-top: 14px;
+      font-size: 32px;
+      line-height: 1;
+      font-weight: 800;
+    }
+
+    .kpiSub {
+      margin-top: 10px;
+      font-size: 13px;
+      opacity: 0.95;
+      line-height: 1.4;
+    }
+
+    .kpi-blue { background: linear-gradient(135deg, #4d8fcb 0%, #3877b1 100%); }
+    .kpi-green { background: linear-gradient(135deg, #80cb7a 0%, #58ac53 100%); }
+    .kpi-orange { background: linear-gradient(135deg, #ffae5f 0%, #ff8d25 100%); }
+    .kpi-teal { background: linear-gradient(135deg, #2eb7a3 0%, #208f80 100%); }
+
+    .contentGrid {
+      display: grid;
+      grid-template-columns: 1.3fr 0.7fr;
+      gap: 18px;
+      align-items: start;
+    }
+
+    .panelHeader {
+      padding: 18px 20px 14px;
+      border-bottom: 1px solid rgba(23, 50, 63, 0.08);
+      background: linear-gradient(180deg, rgba(70, 168, 190, 0.08), rgba(255,255,255,0));
+    }
+
+    .panelTitle {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 0;
+      font-size: 22px;
+      font-weight: 800;
+      color: var(--primary);
+    }
+
+    .panelTitle .icon {
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      display: grid;
+      place-items: center;
+      background: rgba(70, 168, 190, 0.12);
+      border: 1px solid rgba(23, 50, 63, 0.10);
+      font-size: 18px;
+    }
+
+    .panelDesc {
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .panelBody {
+      padding: 18px;
+    }
+
+    .sectionLabel {
+      margin: 0 0 12px;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.55px;
+      font-weight: 800;
+      color: var(--muted);
+    }
+
+    .formGrid {
+      display: grid;
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      padding: 14px;
+      border-radius: 16px;
+      background: var(--panel-soft);
+      border: 1px solid rgba(23, 50, 63, 0.08);
+      transition: all 0.22s ease;
+    }
+
+    .field:hover {
+      transform: translateY(-1px);
+      border-color: rgba(36, 74, 112, 0.18);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .field label {
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--primary);
+      letter-spacing: 0.25px;
+    }
+
+    .fieldHint {
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .span-12 { grid-column: span 12; }
+    .span-8 { grid-column: span 8; }
+    .span-6 { grid-column: span 6; }
+    .span-4 { grid-column: span 4; }
+
+    input, select, textarea {
+      width: 100%;
+      border: 1px solid rgba(23, 50, 63, 0.16);
+      border-radius: 12px;
+      padding: 11px 12px;
+      font-size: 14px;
+      color: var(--text);
+      background: #ffffff;
+      outline: none;
+      box-shadow: inset 0 1px 2px rgba(20, 45, 62, 0.03);
+      transition: 0.2s ease;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 4px rgba(70, 168, 190, 0.14);
+    }
+
+    input[type="number"],
+    input[type="datetime-local"] {
+      font-variant-numeric: tabular-nums;
+    }
+
+    textarea {
+      min-height: 100px;
+      resize: vertical;
+      line-height: 1.45;
+    }
+
+    .sensorGrid {
+      display: grid;
+      grid-template-columns: 1fr 0.8fr;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .autoBar {
+      margin-top: 16px;
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .autoPill {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-2) 100%);
+      color: #dcedf4;
+      font-size: 12px;
+      font-weight: 900;
+      padding: 10px 14px;
+      border-radius: 999px;
+      white-space: nowrap;
+      letter-spacing: 0.35px;
+      box-shadow: var(--shadow-sm);
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .autoPill::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: #39d98a;
+      display: inline-block;
+      margin-right: 8px;
+      vertical-align: middle;
+      box-shadow: 0 0 0 0 rgba(57, 217, 138, 0.5);
+      animation: pulse 1.6s infinite;
+    }
+
+    .status {
+      font-size: 13px;
+      font-weight: 800;
+      display: none;
+      text-align: center;
+      padding: 10px 14px;
+      border-radius: 14px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .success {
+      background: #ecfff3;
+      color: var(--success);
+      border: 1px solid #bfeccf;
+    }
+
+    .fail {
+      background: #fff1f1;
+      color: var(--danger);
+      border: 1px solid #ffcaca;
+    }
+
+    .smallNote {
+      font-size: 13px;
+      color: var(--muted);
+      margin-top: 12px;
+      line-height: 1.65;
+      padding: 14px 16px;
+      border: 1px solid rgba(23, 50, 63, 0.08);
+      border-radius: 14px;
+      background: #f8fcfe;
+    }
+
+    .sideStack {
+      display: grid;
+      gap: 18px;
+    }
+
+    .sideCard {
+      padding: 18px;
+    }
+
+    .sideCard h3 {
+      margin: 0 0 10px;
+      font-size: 16px;
+      font-weight: 800;
+      color: var(--primary);
+    }
+
+    .sideCard p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .stackList {
+      margin-top: 14px;
+      display: grid;
+      gap: 10px;
+    }
+
+    .stackItem {
+      padding: 12px 13px;
+      border-radius: 14px;
+      background: #f7fbfd;
+      border: 1px solid rgba(23, 50, 63, 0.08);
+    }
+
+    .stackItem strong {
+      display: block;
+      color: var(--primary);
+      font-size: 13px;
+      margin-bottom: 4px;
+    }
+
+    .stackItem span {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .gaugeBox {
+      margin-top: 14px;
+      padding: 16px;
+      border-radius: 16px;
+      background: #f7fbfd;
+      border: 1px solid rgba(23, 50, 63, 0.08);
+    }
+
+    .gaugeHeader {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+      margin-bottom: 12px;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--muted);
+    }
+
+    .gaugeTrack {
+      position: relative;
+      height: 14px;
+      border-radius: 999px;
+      overflow: hidden;
+      background: linear-gradient(90deg, #87cf84 0%, #f3c64f 58%, #f38b2f 80%, #eb5757 100%);
+    }
+
+    .gaugeMarker {
+      position: absolute;
+      top: -4px;
+      left: 79%;
+      width: 4px;
+      height: 22px;
+      background: #17314f;
+      border-radius: 999px;
+      box-shadow: 0 0 0 3px rgba(255,255,255,0.9);
+    }
+
+    .gaugeLabels {
+      margin-top: 10px;
+      display: flex;
+      justify-content: space-between;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .mapMock {
+      margin-top: 14px;
+      height: 220px;
+      border-radius: 16px;
+      border: 1px solid rgba(23, 50, 63, 0.08);
+      background:
+        linear-gradient(rgba(255,255,255,0.72), rgba(255,255,255,0.72)),
+        linear-gradient(90deg, rgba(76, 125, 170, 0.08) 1px, transparent 1px),
+        linear-gradient(rgba(76, 125, 170, 0.08) 1px, transparent 1px);
+      background-size: auto, 26px 26px, 26px 26px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .mapMock svg {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .legend {
+      margin-top: 12px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .legendItem {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(23, 50, 63, 0.08);
+      background: #f7fbfd;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 999px;
+      display: inline-block;
+    }
+
+    .green { background: #16a34a; }
+    .yellow { background: #f59e0b; }
+    .red { background: #ef4444; }
+    .blue { background: #3b82f6; }
+
+    .exceededCell {
+      outline: 2px solid #d64545;
+      outline-offset: -2px;
+      background: linear-gradient(180deg, #fff0f0 0%, #fff7f7 100%) !important;
+    }
+
+    .okCell {
+      outline: 2px solid var(--accent);
+      outline-offset: -2px;
+      background: linear-gradient(180deg, #eefcf5 0%, #fbfffd 100%) !important;
+    }
+
+    @media (max-width: 1150px) {
+      .hero,
+      .contentGrid {
+        grid-template-columns: 1fr;
+      }
+
+      .kpiGrid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 800px) {
+      .page {
+        padding: 18px 14px 28px;
+      }
+
+      .topbar {
+        padding: 14px 16px;
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .heroTitle {
+        font-size: 24px;
+      }
+
+      .kpiGrid {
+        grid-template-columns: 1fr;
+      }
+
+      .formGrid {
+        grid-template-columns: 1fr;
+      }
+
+      .span-12, .span-8, .span-6, .span-4 {
+        grid-column: span 1;
+      }
+
+      .sensorGrid {
+        grid-template-columns: 1fr;
+      }
+
+      .brandTitle,
+      .brandSub {
+        white-space: normal;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <div class="brandBadge">📡</div>
+      <div class="brandText">
+        <div class="brandTitle">Telematics Operations Console</div>
+        <div class="brandSub">Real-time fleet monitoring • alert intake • Salesforce auto-sync</div>
+      </div>
+    </div>
+
+    <div class="topStats">
+      <div class="topChip live">System Live</div>
+      <div class="topChip">Auto Mode Enabled</div>
+      <div class="topChip">Threshold Watch Active</div>
+    </div>
+  </header>
+
+  <div class="page">
+    <section class="hero">
+      <div class="heroCard">
+        <h1 class="heroTitle">Telematics Data</h1>
+        <div class="heroText">
+          This operator console is designed for quick telemetry review, threshold-based alerting,
+          and direct CRM synchronization. As values change, the page automatically evaluates the
+          selected event type and, when required, sends the payload to Salesforce to create a
+          <strong>Telematic Event</strong> and a related <strong>Case</strong>.
+        </div>
+
+        <div class="heroPills">
+          <div class="pill">No manual submit needed</div>
+          <div class="pill">Live threshold validation</div>
+          <div class="pill">Event + case creation flow</div>
+          <div class="pill">Predictive Maintenance sync</div>
+        </div>
+      </div>
+
+      <div class="heroRight">
+        <div class="noteCard">
+          <h3>Current Threshold Rules</h3>
+          <p>
+            <strong>EngineTempHigh &gt; 30</strong><br />
+            <strong>RPMSpike &gt; 6000</strong><br />
+            <strong>Predictive Maintenance</strong> does not use a threshold and is sent automatically on change.
+          </p>
+        </div>
+
+        <div class="noteCard">
+          <h3>How the page behaves</h3>
+          <p>
+            The form is continuously monitored. If the value exceeds a configured limit, the payload is auto-sent.
+            To avoid repeated duplicates, the page only creates a new threshold-triggered event when the value goes
+            below threshold and exceeds it again.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section class="kpiGrid">
+      <div class="kpiCard kpi-blue">
+        <div class="kpiLabel">Monitoring Mode</div>
+        <div class="kpiValue">LIVE</div>
+        <div class="kpiSub">Real-time client-side validation for incoming telemetry updates</div>
+      </div>
+
+      <div class="kpiCard kpi-green">
+        <div class="kpiLabel">EngineTempHigh</div>
+        <div class="kpiValue">&gt; 30</div>
+        <div class="kpiSub">Threshold-based case creation when engine temperature crosses limit</div>
+      </div>
+
+      <div class="kpiCard kpi-orange">
+        <div class="kpiLabel">RPMSpike</div>
+        <div class="kpiValue">&gt; 6000</div>
+        <div class="kpiSub">Overspeed / spike detection for high-RPM anomaly reporting</div>
+      </div>
+
+      <div class="kpiCard kpi-teal">
+        <div class="kpiLabel">Predictive Maintenance</div>
+        <div class="kpiValue">AUTO</div>
+        <div class="kpiSub">Every valid value change is sent for dashboard and health-needle updates</div>
+      </div>
+    </section>
+
+    <section class="contentGrid">
+      <div class="panel">
+        <div class="panelHeader">
+          <h2 class="panelTitle">
+            <span class="icon">🚚</span>
+            Telemetric Event Input
+          </h2>
+          <div class="panelDesc">
+            Enter current vehicle telemetry below. The layout is redesigned for a more modern telematics-dashboard feel,
+            while the existing threshold logic and auto-send behavior remain unchanged.
+          </div>
+        </div>
+
+        <div class="panelBody">
+          <p class="sectionLabel">Vehicle Event Details</p>
+
+          <div class="formGrid">
+            <div class="field span-6">
+              <label for="vehicleSerialNumber">Vehicle__c</label>
+              <input id="vehicleSerialNumber" value="<%= model.vehicleSerialNumber %>" placeholder="Vehicle serial number" />
+              <div class="fieldHint">Primary vehicle reference used to identify the source asset.</div>
+            </div>
+
+            <div class="field span-6">
+              <label for="eventTimestamp">Event_Timestamp__c</label>
+              <input id="eventTimestamp" type="datetime-local" value="<%= model.eventTimestamp %>" />
+              <div class="fieldHint">Timestamp associated with the current telematics event.</div>
+            </div>
+
+            <div class="field span-4">
+              <label for="eventType">Event_Type__c</label>
+              <select id="eventType">
+                <option value="RPMSpike" <%= model.eventType === 'RPMSpike' ? 'selected' : '' %>>RPMSpike</option>
+                <option value="EngineTempHigh" <%= model.eventType === 'EngineTempHigh' ? 'selected' : '' %>>EngineTempHigh</option>
+                <option value="Predictive Maintenance" <%= model.eventType === 'Predictive Maintenance' ? 'selected' : '' %>>Predictive Maintenance</option>
+              </select>
+              <div class="fieldHint">Select the telemetry signal category to evaluate.</div>
+            </div>
+
+            <div class="field span-4" id="sensorCell">
+              <label>Sensor_Value__c</label>
+              <div class="sensorGrid">
+                <input id="sensorValueNumber" type="number" value="<%= model.sensorValueNumber %>" placeholder="Value" />
+                <input id="sensorUnit" value="<%= model.sensorUnit %>" placeholder="Unit" />
+              </div>
+              <div class="fieldHint">Example values: 31 °C, 6001 RPM, or 55 %.</div>
+            </div>
+
+            <div class="field span-4">
+              <label for="severity">Severity__c</label>
+              <select id="severity">
+                <option value="Low" <%= model.severity === 'Low' ? 'selected' : '' %>>Low</option>
+                <option value="Medium" <%= model.severity === 'Medium' ? 'selected' : '' %>>Medium</option>
+                <option value="High" <%= model.severity === 'High' ? 'selected' : '' %>>High</option>
+                <option value="Critical" <%= model.severity === 'Critical' ? 'selected' : '' %>>Critical</option>
+              </select>
+              <div class="fieldHint">Assign the expected operational or service impact level.</div>
+            </div>
+
+            <div class="field span-6">
+              <label for="component">Component__c</label>
+              <input id="component" value="<%= model.component %>" placeholder="Engine, Cooling System, Transmission..." />
+              <div class="fieldHint">Mention the component most relevant to this signal.</div>
+            </div>
+
+            <div class="field span-6">
+              <label for="status">Status__c</label>
+              <select id="status">
+                <option value="New" <%= model.status === 'New' ? 'selected' : '' %>>New</option>
+                <option value="In Progress" <%= model.status === 'In Progress' ? 'selected' : '' %>>In Progress</option>
+                <option value="Resolved" <%= model.status === 'Resolved' ? 'selected' : '' %>>Resolved</option>
+              </select>
+              <div class="fieldHint">Used by operations and service teams to track the alert state.</div>
+            </div>
+
+            <div class="field span-12">
+              <label for="recommendedAction">Recommended_Action__c</label>
+              <input id="recommendedActionShort" value="<%= model.recommendedAction %>" style="margin-bottom:8px;" placeholder="Short recommendation" />
+              <textarea id="recommendedAction" placeholder="Provide maintenance or operational guidance"><%= model.recommendedAction %></textarea>
+              <div class="fieldHint">
+                Add the recommended response, inspection step, or repair guidance for the current event.
+              </div>
+            </div>
+          </div>
+
+          <div class="autoBar">
+            <div class="autoPill">AUTO MODE: ON</div>
+            <div class="status success" id="successBox">✅</div>
+            <div class="status fail" id="failBox">❌</div>
+          </div>
+
+          <div class="smallNote" id="resultText"></div>
+
+          <div class="smallNote">
+            <strong>Testing tips</strong><br />
+            • For <strong>EngineTempHigh</strong>, enter <strong>31</strong> to auto-create a Case.<br />
+            • For <strong>RPMSpike</strong>, enter <strong>6001</strong> to auto-create a Case.<br />
+            • For <strong>Predictive Maintenance</strong>, enter <strong>55</strong> to auto-send an event for dashboard updates.
+          </div>
+        </div>
+      </div>
+
+      <div class="sideStack">
+        <div class="sideCard">
+          <h3>Threshold Monitor</h3>
+          <p>
+            This side section gives the page a more telematics-dashboard look while keeping your original behavior intact.
+            The marker below is visual only and represents how operators often view safe, warning, and critical telemetry zones.
+          </p>
+
+          <div class="gaugeBox">
+            <div class="gaugeHeader">
+              <span>Safe → Warning → Critical</span>
+              <span>Reference lane</span>
+            </div>
+
+            <div class="gaugeTrack">
+              <div class="gaugeMarker"></div>
+            </div>
+
+            <div class="gaugeLabels">
+              <span>Normal</span>
+              <span>Watch</span>
+              <span>Alert</span>
+            </div>
+          </div>
+
+          <div class="legend">
+            <div class="legendItem"><span class="dot green"></span> Normal range</div>
+            <div class="legendItem"><span class="dot yellow"></span> Near threshold</div>
+            <div class="legendItem"><span class="dot red"></span> Exceeded</div>
+            <div class="legendItem"><span class="dot blue"></span> Predictive update</div>
+          </div>
+        </div>
+
+        <div class="sideCard">
+          <h3>Routing Workflow</h3>
+          <p>
+            The current screen is optimized for event intake and alert forwarding. Payloads are validated in the UI,
+            then posted to Salesforce only when required by your existing rules.
+          </p>
+
+          <div class="stackList">
+            <div class="stackItem">
+              <strong>1. Capture signal</strong>
+              <span>Vehicle, event type, sensor value, severity, component, action, and status are entered.</span>
+            </div>
+            <div class="stackItem">
+              <strong>2. Check threshold</strong>
+              <span>The current event is evaluated against the configured threshold map in the browser.</span>
+            </div>
+            <div class="stackItem">
+              <strong>3. Auto-send</strong>
+              <span>When the rule is satisfied, the existing integration sends data to your CRM endpoint.</span>
+            </div>
+            <div class="stackItem">
+              <strong>4. Service follow-up</strong>
+              <span>Telematic Event and Case records support downstream investigation and maintenance actions.</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="sideCard">
+          <h3>Fleet Snapshot</h3>
+          <p>
+            A simple visual route-style block helps the page feel closer to a telematics dashboard. This is decorative
+            and can later be replaced with a real GPS or device-tracking widget if needed.
+          </p>
+
+          <div class="mapMock">
+            <svg viewBox="0 0 500 220" preserveAspectRatio="none">
+              <path
+                d="M34,170 C80,148 115,90 164,94 C220,99 236,149 290,128 C346,106 354,54 414,62 C446,67 460,84 472,108"
+                fill="none"
+                stroke="#5ca9d6"
+                stroke-width="5"
+                stroke-linecap="round"
+              ></path>
+              <circle cx="34" cy="170" r="8" fill="#16a34a"></circle>
+              <circle cx="164" cy="94" r="7" fill="#f59e0b"></circle>
+              <circle cx="290" cy="128" r="7" fill="#f59e0b"></circle>
+              <circle cx="472" cy="108" r="8" fill="#ef4444"></circle>
+            </svg>
+          </div>
+        </div>
+
+        <div class="sideCard">
+          <h3>Operator Guidance</h3>
+          <p>
+            Use the event type that best matches the incoming signal. For threshold-based alerts, drop the value below
+            threshold and exceed it again if you need a fresh alert cycle using the current logic.
+          </p>
+
+          <div class="stackList">
+            <div class="stackItem">
+              <strong>RPMSpike</strong>
+              <span>Best suited for abnormal engine speed spikes or overspeed conditions.</span>
+            </div>
+            <div class="stackItem">
+              <strong>EngineTempHigh</strong>
+              <span>Use for overheating conditions and cooling or thermal stress scenarios.</span>
+            </div>
+            <div class="stackItem">
+              <strong>Predictive Maintenance</strong>
+              <span>Ideal for health or maintenance indicators that should always refresh downstream systems.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
   <script>
     // UI-side thresholds (same as Salesforce example)
     const THRESHOLDS = {
@@ -414,32 +998,32 @@ textarea {
       RPMSpike: 6000
       // Predictive Maintenance: no threshold (always send to update dashboard needle)
     };
- 
+
     // Debounce to avoid calling Salesforce on every keystroke
     let debounceTimer = null;
- 
+
     // Prevent spamming Cases: only trigger when crossing from NOT exceeded -> exceeded
     let lastExceeded = false;
- 
+
     // Avoid sending duplicate payload repeatedly
     let lastSentSignature = "";
- 
+
     function el(id) { return document.getElementById(id); }
- 
+
     function showStatus(type, message) {
       const successBox = el("successBox");
       const failBox = el("failBox");
       const resultText = el("resultText");
- 
+
       successBox.style.display = "none";
       failBox.style.display = "none";
- 
+
       if (type === "success") successBox.style.display = "block";
       if (type === "fail") failBox.style.display = "block";
- 
+
       resultText.innerText = message || "";
     }
- 
+
     function buildPayload() {
       return {
         vehicleSerialNumber: el("vehicleSerialNumber").value.trim(),
@@ -453,11 +1037,11 @@ textarea {
         status: el("status").value
       };
     }
- 
+
     function thresholdFor(eventType) {
       return THRESHOLDS[eventType]; // undefined for Predictive Maintenance
     }
- 
+
     function signature(payload) {
       return [
         payload.vehicleSerialNumber,
@@ -469,14 +1053,14 @@ textarea {
         payload.status
       ].join("|");
     }
- 
+
     function updateSensorCellUI(state) {
       const cell = el("sensorCell");
       cell.classList.remove("exceededCell", "okCell");
       if (state === "exceeded") cell.classList.add("exceededCell");
       if (state === "ok") cell.classList.add("okCell");
     }
- 
+
     async function sendToSalesforce(payload, reasonText) {
       try {
         const res = await fetch("/send-telemetry-to-crm", {
@@ -484,15 +1068,15 @@ textarea {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload)
         });
- 
+
         const data = await res.json();
- 
+
         if (res.ok && data.success) {
           let msg = reasonText || (data.message || "Sent");
- 
+
           if (data.telematicEventId) msg += " | Telematic Event: " + data.telematicEventId;
           if (data.caseId) msg += " | Case: " + data.caseId;
- 
+
           showStatus("success", msg);
         } else {
           showStatus("fail", (data && (data.message || JSON.stringify(data))) || "Salesforce Error");
@@ -503,30 +1087,30 @@ textarea {
         console.log("Error:", err.message);
       }
     }
- 
+
     function onFieldChange() {
       clearTimeout(debounceTimer);
- 
+
       debounceTimer = setTimeout(async () => {
         const payload = buildPayload();
         const t = thresholdFor(payload.eventType);
- 
+
         // Predictive Maintenance: always send on change (dashboard needle updates)
         if (payload.eventType === "Predictive Maintenance") {
           updateSensorCellUI(""); // no threshold styling
- 
+
           const sig = signature(payload);
           if (sig !== lastSentSignature) {
             lastSentSignature = sig;
             lastExceeded = false;
- 
+
             await sendToSalesforce(payload, "📈 Predictive Maintenance changed → auto-sent to Salesforce.");
           } else {
             showStatus("success", "📈 Predictive Maintenance unchanged (not resent).");
           }
           return;
         }
- 
+
         // No threshold defined for this event type
         if (t === undefined || t === null) {
           updateSensorCellUI("");
@@ -534,18 +1118,18 @@ textarea {
           showStatus("success", "ℹ️ No threshold configured for this event type. Not auto-sending.");
           return;
         }
- 
+
         // Threshold defined: compare
         const exceeded = payload.sensorValueNumber > t;
- 
+
         if (exceeded) {
           updateSensorCellUI("exceeded");
- 
+
           // Trigger only on crossing to exceeded
           if (!lastExceeded) {
             lastExceeded = true;
             const sig = signature(payload);
- 
+
             if (sig !== lastSentSignature) {
               lastSentSignature = sig;
               await sendToSalesforce(payload, `⚠️ Exceeded threshold (${payload.eventType} > ${t}) → auto-sent.`);
@@ -562,7 +1146,7 @@ textarea {
         }
       }, 500); // 500ms debounce
     }
- 
+
     window.addEventListener("load", () => {
       const ids = [
         "vehicleSerialNumber",
@@ -575,17 +1159,17 @@ textarea {
         "recommendedAction",
         "status"
       ];
- 
+
       ids.forEach(id => {
         const element = el(id);
         if (!element) return;
         element.addEventListener("input", onFieldChange);
         element.addEventListener("change", onFieldChange);
       });
- 
+
       // Initial evaluation on load
       onFieldChange();
     });
-</script>
+  </script>
 </body>
 </html>
