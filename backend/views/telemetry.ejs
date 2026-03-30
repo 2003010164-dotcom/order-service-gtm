@@ -999,21 +999,6 @@
       // Predictive Maintenance: no threshold (always send to update dashboard needle)
     };
 
-const EVENT_CONFIG = {
-  EngineTempHigh: {
-    unit: "C",
-    exceedAction: "Stop vehicle safely. Check coolant level and cooling system immediately. Tow if necessary."
-  },
-  RPMSpike: {
-    unit: "RPM",
-    exceedAction: "Log incident for analysis. Could indicate aggressive driving or transmission slippage."
-  },
-  "Predictive Maintenance": {
-    unit: "",
-    exceedAction: "Predictive alert: schedule inspection within 7 days."
-  }
-};
-
     // Debounce to avoid calling Salesforce on every keystroke
     let debounceTimer = null;
 
@@ -1076,26 +1061,6 @@ const EVENT_CONFIG = {
       if (state === "ok") cell.classList.add("okCell");
     }
 
-function applyUnitForEventType(eventType) {
-  const cfg = EVENT_CONFIG[eventType];
-  if (!cfg) return;
-
-  const unitEl = el("sensorUnit");
-  unitEl.value = cfg.unit ?? "";
-
-  // lock unit field so user cannot type wrong units
-  unitEl.readOnly = true;
-}
-
-function applyRecommendedActionForEvent(eventType) {
-  const cfg = EVENT_CONFIG[eventType];
-  if (!cfg || !cfg.exceedAction) return;
-
-  // fill both short + long fields
-  if (el("recommendedActionShort")) el("recommendedActionShort").value = cfg.exceedAction;
-  el("recommendedAction").value = cfg.exceedAction;
-}
-
     async function sendToSalesforce(payload, reasonText) {
       try {
         const res = await fetch("/send-telemetry-to-crm", {
@@ -1127,11 +1092,8 @@ function applyRecommendedActionForEvent(eventType) {
       clearTimeout(debounceTimer);
 
       debounceTimer = setTimeout(async () => {
-  // Apply unit automatically whenever eventType changes
-  applyUnitForEventType(el("eventType").value);
-
-  const payload = buildPayload();
-  const t = thresholdFor(payload.eventType);
+        const payload = buildPayload();
+        const t = thresholdFor(payload.eventType);
 
         // Predictive Maintenance: always send on change (dashboard needle updates)
         if (payload.eventType === "Predictive Maintenance") {
@@ -1160,35 +1122,28 @@ function applyRecommendedActionForEvent(eventType) {
         // Threshold defined: compare
         const exceeded = payload.sensorValueNumber > t;
 
-     if (exceeded) {
-  updateSensorCellUI("exceeded");
+        if (exceeded) {
+          updateSensorCellUI("exceeded");
 
-  // Trigger only on crossing to exceeded
-  if (!lastExceeded) {
-    lastExceeded = true;
+          // Trigger only on crossing to exceeded
+          if (!lastExceeded) {
+            lastExceeded = true;
+            const sig = signature(payload);
 
-    // Auto-fill recommended action based on event type when exceeded
-    applyRecommendedActionForEvent(payload.eventType);
-
-    // Rebuild payload after autofill so Salesforce receives updated action text
-    const payload2 = buildPayload();
-    const sig2 = signature(payload2);
-
-    if (sig2 !== lastSentSignature) {
-      lastSentSignature = sig2;
-      await sendToSalesforce(payload2, `⚠️ Exceeded threshold (${payload2.eventType} > ${t}) → auto-sent.`);
-    } else {
-      showStatus("success", `⚠️ Exceeded threshold (${payload2.eventType} > ${t}) (already sent for same values).`);
-    }
-  } else {
-    showStatus("success", `⚠️ Still above threshold (${payload.eventType} > ${t}). Reduce below threshold then exceed again to create a new Case.`);
-  }
-
-} else {
-  updateSensorCellUI("ok");
-  lastExceeded = false;
-  showStatus("success", `✅ Within threshold (<= ${t}). No auto-send.`);
-}
+            if (sig !== lastSentSignature) {
+              lastSentSignature = sig;
+              await sendToSalesforce(payload, `⚠️ Exceeded threshold (${payload.eventType} > ${t}) → auto-sent.`);
+            } else {
+              showStatus("success", `⚠️ Exceeded threshold (${payload.eventType} > ${t}) (already sent for same values).`);
+            }
+          } else {
+            showStatus("success", `⚠️ Still above threshold (${payload.eventType} > ${t}). Reduce below threshold then exceed again to create a new Case.`);
+          }
+        } else {
+          updateSensorCellUI("ok");
+          lastExceeded = false;
+          showStatus("success", `✅ Within threshold (<= ${t}). No auto-send.`);
+        }
       }, 500); // 500ms debounce
     }
 
@@ -1213,7 +1168,6 @@ function applyRecommendedActionForEvent(eventType) {
       });
 
       // Initial evaluation on load
-      applyUnitForEventType(el("eventType").value);
       onFieldChange();
     });
   </script>
