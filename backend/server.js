@@ -69,6 +69,105 @@ app.get("/api/sim/state", (req, res) => {
 });
 
 
+
+// ===============================
+// Claim page storage (memory)
+// ===============================
+let claimHeader = null;     // {dealerAccountName, repairOrder, claimNumber, claimId}
+let assetBlock = null;      // {warranty, assetRegNo, vin, assetOwner}
+let claimRows = [];         // each row = one generated line (from parts/labour count)
+
+// Receive Claim bundle from Salesforce
+app.post("/receive-claim", (req, res) => {
+  try {
+    const data = req.body;
+    console.log("📥 Received Claim payload:", JSON.stringify(data, null, 2));
+
+    if (!data?.claimHeader?.claimId) {
+      return res.status(400).json({ ok: false, message: "Invalid payload: claimHeader.claimId required" });
+    }
+
+    claimHeader = data.claimHeader;
+    assetBlock = data.assetBlock || {};
+    claimRows = Array.isArray(data.rows) ? data.rows : [];
+
+    return res.status(200).json({
+      ok: true,
+      message: "Claim stored for UI",
+      rowCount: claimRows.length
+    });
+  } catch (e) {
+    console.error("❌ Error in /receive-claim:", e);
+    return res.status(500).json({ ok: false, message: e.message });
+  }
+});
+
+// Excel-like claims page
+app.get("/claims", (req, res) => {
+  res.render("claims", {
+    claimHeader,
+    assetBlock,
+    rows: claimRows
+  });
+});
+
+// Submit Amount Paid back to Salesforce (Apex REST)
+app.post("/submit-claim-amounts", async (req, res) => {
+  try {
+    let { rows } = req.body;
+
+    if (typeof rows === "string") rows = JSON.parse(rows);
+
+    if (!Array.isArray(rows) || rows.length === 0) {
+      return res.status(400).json({ ok: false, message: "No rows received" });
+    }
+
+    // normalize amounts (string -> number/null)
+    rows = rows.map(r => ({
+      ...r,
+      amountPaid: (r.amountPaid === "" || r.amountPaid == null) ? null : Number(r.amountPaid)
+    }));
+
+    const auth = await getSalesforceToken();
+
+    // Salesforce Apex REST endpoint
+    const endpoint = `${auth.instance_url}/services/apexrest/claimpayments/v1`;
+
+    const sfResp = await axios.post(
+      endpoint,
+      { rows },
+      {
+        headers: {
+          Authorization: `Bearer ${auth.access_token}`,
+          "Content-Type": "application/json"
+        },
+        timeout: 20000
+      }
+    );
+
+    // update in-memory rows so UI shows latest amounts
+    const amountMap = new Map(rows.map(x => [x.externalKey, x.amountPaid]));
+    claimRows = claimRows.map(x => ({
+      ...x,
+      amountPaid: amountMap.has(x.externalKey) ? amountMap.get(x.externalKey) : x.amountPaid
+    }));
+
+    return res.status(200).json({
+      ok: true,
+      message: "Amounts submitted to Salesforce",
+      salesforceResponse: sfResp.data
+    });
+
+  } catch (err) {
+    console.error("❌ Error in /submit-claim-amounts:", err.message);
+    if (err.response) {
+      return res.status(err.response.status).json({ ok: false, details: err.response.data });
+    }
+    return res.status(500).json({ ok: false, message: err.message });
+  }
+});
+
+
 let telemetryData = [
   {
     vin: "VIN-JEEP-0001",
