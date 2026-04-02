@@ -389,12 +389,12 @@ app.post("/login", (req, res) => {
     console.log("✅ Login success:", email);
     res.redirect("/dashboard");
   } 
-   if(email === "telemetryManager@app.com" && password === "admin123"){
+   else if(email === "telemetryManager@app.com" && password === "admin123"){
     console.log("Login Success: ", email);
     res.redirect("/telemetry");
    }
     
-if (email === "simulator@app.com" && password === "admin123") {
+   else if (email === "simulator@app.com" && password === "admin123") {
     console.log("✅ Login success:", email);
     return res.redirect("/simulation");
   }
@@ -478,7 +478,7 @@ app.get("/telemetry", (req, res) => {
     eventTimestamp: new Date().toISOString().slice(0, 16), // for datetime-local
     eventType: "RPMSpike",
     sensorValueNumber: 0,
-    sensorUnit: "RPM",
+    sensorUnit: "C",
     severity: "High",
     component: "Engine",
     recommendedAction: "Engine temp exceeded threshold. Reduce speed/load and pull over when safe. Allow cool-down before inspection. Check for coolant leaks/low coolant, fan activation, blocked radiator airflow, and abnormal odors/steam.",
