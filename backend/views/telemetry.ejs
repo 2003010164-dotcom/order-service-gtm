@@ -1170,6 +1170,51 @@
       // Initial evaluation on load
       onFieldChange();
     });
+// ===============================
+// ✅ Simulation → Telematics Sync (polling)
+// Updates Sensor_Value__c when simulation changes
+// ===============================
+let lastSimSig = "";
+
+async function pullSimToTelematics() {
+  try {
+    const res = await fetch("/api/sim/state", { cache: "no-store" });
+    const data = await res.json();
+    if (!res.ok || !data.ok) return;
+
+    const simVal = Number(data.sensorValue);
+    const simUnit = (data.sensorUnit || "").trim();
+    const sig = `${simVal}|${simUnit}|${data.at || ""}`;
+
+    if (sig === lastSimSig) return; // no new update
+    lastSimSig = sig;
+
+    const sensorInput = el("sensorValueNumber");
+    const unitInput = el("sensorUnit");
+    if (!sensorInput) return;
+
+    // Don't overwrite if operator is actively typing in that same field
+    if (document.activeElement === sensorInput) return;
+
+    // Push value from simulation into telematics input
+    sensorInput.value = Number.isFinite(simVal) ? String(simVal) : "";
+
+    // Optional: only set unit if empty (won't override operator choice)
+    if (unitInput && !unitInput.value.trim() && simUnit) {
+      unitInput.value = simUnit;
+    }
+
+    // Trigger existing telematics behavior (threshold checks + auto-send)
+    onFieldChange();
+  } catch (err) {
+    // keep silent – do not affect existing telematics functionality
+  }
+}
+
+window.addEventListener("load", () => {
+  pullSimToTelematics();
+  setInterval(pullSimToTelematics, 1000); // every 1s
+});
   </script>
 </body>
 </html>
