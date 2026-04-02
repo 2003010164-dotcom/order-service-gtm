@@ -24,6 +24,50 @@ app.set("views", path.join(__dirname, "views"));
 let orders = [];
 let partsOrders = [];
 
+// ===============================
+// ✅ Simulation → Telematics Sync
+// Stores latest sensor value posted from the simulation page
+// ===============================
+let latestSimState = {
+  sensorValue: 0,
+  sensorUnit: "C",
+  at: new Date().toISOString()
+};
+
+// Simulation page will POST here
+app.post("/api/sim/state", (req, res) => {
+  try {
+    const { engineTemp, speed, at, sensorValue, sensorUnit } = req.body || {};
+
+    // Accept either engineTemp (from your sim page) OR generic sensorValue
+    const incomingValue =
+      typeof sensorValue === "number" ? sensorValue :
+      typeof engineTemp === "number" ? engineTemp :
+      null;
+
+    if (incomingValue !== null) latestSimState.sensorValue = incomingValue;
+
+    // Unit: allow override if provided, else default stays
+    if (typeof sensorUnit === "string" && sensorUnit.trim()) {
+      latestSimState.sensorUnit = sensorUnit.trim();
+    } else {
+      // If engineTemp is posted (common), default unit = C
+      if (typeof engineTemp === "number") latestSimState.sensorUnit = "C";
+    }
+
+    latestSimState.at = at || new Date().toISOString();
+
+    return res.json({ ok: true });
+  } catch (e) {
+    return res.status(500).json({ ok: false, message: e.message });
+  }
+});
+
+// Telematics page will GET here (polling)
+app.get("/api/sim/state", (req, res) => {
+  res.json({ ok: true, ...latestSimState });
+});
+
 
 let telemetryData = [
   {
@@ -349,6 +393,12 @@ app.post("/login", (req, res) => {
     console.log("Login Success: ", email);
     res.redirect("/telemetry");
    }
+    
+if (email === "simulator@app.com" && password === "admin123") {
+    console.log("✅ Login success:", email);
+    return res.redirect("/simulation");
+  }
+
   
   else {
     res.send("<h3>Invalid credentials. <a href='/login'>Try again</a></h3>");
@@ -500,6 +550,12 @@ app.post("/send-telemetry-to-crm", async (req, res) => {
   }
 });
 
+// ✅ Car Simulation Page
+app.get("/simulation", (req, res) => {
+  // If your simulation.ejs uses latestAsset/model you can pass them;
+  // otherwise keep it simple.
+  res.render("simulation", { latestAsset });
+});
 
 
 
