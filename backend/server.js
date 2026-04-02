@@ -481,7 +481,7 @@ app.get("/telemetry", (req, res) => {
     sensorUnit: "RPM",
     severity: "High",
     component: "Engine",
-    recommendedAction: "Log incident for analysis. Could indicate aggressive driving or transmission slippage.",
+    recommendedAction: "Engine temp exceeded threshold. Reduce speed/load and pull over when safe. Allow cool-down before inspection. Check for coolant leaks/low coolant, fan activation, blocked radiator airflow, and abnormal odors/steam.",
     status: "New"
   };
 
