@@ -6,57 +6,160 @@
   <title>Claims</title>
 
   <style>
+    :root{
+      /* Blue eclipse palette (from your image) */
+      --c1: #272757; /* midnight indigo */
+      --c2: #8686AC; /* soft lavender */
+      --c3: #505081; /* slate purple */
+      --c4: #0F0E47; /* deep navy */
+
+      /* neutrals that still match the palette */
+      --page-bg: #f4f5fb;      /* light background */
+      --table-bg: #ffffff;     /* white */
+      --border: #d7d9e8;       /* cool border */
+      --row-grey: #f0f1f7;     /* grey (blue-tinted) */
+      --row-white: #ffffff;    /* white */
+      --hover: #e7e9f6;        /* hover tint */
+
+      --text: #111827;
+      --muted: #4b5563;
+    }
+
     body {
       font-family: "Segoe UI", Arial, sans-serif;
-      background: #ffffff;
-      margin: 18px;
-      color: #111;
+      background: var(--page-bg);
+      margin: 18px auto;
+      padding: 18px;
+      max-width: 1200px;
+      color: var(--text);
     }
-    h2 { margin: 0 0 12px; font-weight: 600; }
+
+    h2 {
+      margin: 0 0 14px;
+      font-weight: 700;
+      text-align: center; /* ✅ centered heading */
+      color: var(--c4);
+      letter-spacing: 0.2px;
+    }
 
     table {
       width: 100%;
-      border-collapse: collapse;
+      border-collapse: separate;
+      border-spacing: 0;
       table-layout: fixed;
+      background: var(--table-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 10px 24px rgba(15, 14, 71, 0.08);
     }
+
     th, td {
-      border: 1px solid #cfcfcf;
-      padding: 10px;
+      border: 1px solid var(--border);
+      padding: 12px;
       font-size: 13px;
       vertical-align: top;
       word-wrap: break-word;
       white-space: normal;
-    }
-    th {
-      background: #fff200; /* Excel yellow */
-      font-weight: 700;
-      text-align: left;
+      line-height: 1.45;
     }
 
-    .assetCell { line-height: 1.5; }
-    .muted { color: #444; font-size: 12px; }
+    /* ✅ Header using palette */
+    thead th {
+      background: linear-gradient(0deg, var(--c4), var(--c1));
+      color: #ffffff;
+      font-weight: 800;
+      text-align: left;
+      border-color: rgba(255,255,255,0.14);
+    }
+
+    /* subtle header separator */
+    thead th + th {
+      border-left-color: rgba(255,255,255,0.12);
+    }
+
+    .muted {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    /* muted inside header should be readable on dark bg */
+    thead .muted{
+      color: rgba(255,255,255,0.78);
+      font-weight: 600;
+      font-size: 11px;
+    }
+
+    /* remove double borders on outer edges (clean rounded look) */
+    thead tr th:first-child,
+    tbody tr td:first-child { border-left: 0; }
+    thead tr th:last-child,
+    tbody tr td:last-child { border-right: 0; }
+    thead tr th { border-top: 0; }
+    tbody tr:last-child td { border-bottom: 0; }
+
+    /* ✅ Alternating row colors: grey + white */
+    tbody tr:nth-child(odd) td  { background: var(--row-white); }
+    tbody tr:nth-child(even) td { background: var(--row-grey); }
+
+    tbody tr:hover td { background: var(--hover); }
+
+    .assetCell { line-height: 1.55; }
 
     input.amountPaid {
       width: 100%;
-      padding: 6px;
-      border: 1px solid #999;
-      border-radius: 4px;
+      padding: 8px 10px;
+      border: 1px solid #c7cbe0;
+      border-radius: 8px;
       font-size: 13px;
+      background: #ffffff;
+      box-sizing: border-box;
+      transition: border-color 0.15s ease, box-shadow 0.15s ease;
     }
 
-    .btnBar { margin-top: 14px; display: flex; gap: 10px; }
+    input.amountPaid:focus {
+      outline: none;
+      border-color: var(--c3);
+      box-shadow: 0 0 0 3px rgba(134, 134, 172, 0.28); /* uses c2 glow */
+    }
+
+    /* ✅ Button centered */
+    .btnBar {
+      margin-top: 16px;
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+    }
+
+    /* ✅ Button using palette */
     .btn {
-      background: #0b2e33;
+      background: linear-gradient(0deg, var(--c1), var(--c4));
       color: #fff;
-      border: none;
-      padding: 10px 14px;
-      border-radius: 6px;
+      border: 1px solid rgba(255,255,255,0.12);
+      padding: 10px 16px;
+      border-radius: 10px;
       cursor: pointer;
-      font-weight: 600;
+      font-weight: 800;
+      letter-spacing: 0.2px;
+      box-shadow: 0 10px 20px rgba(15, 14, 71, 0.18);
+      transition: transform 0.08s ease, box-shadow 0.2s ease, filter 0.2s ease;
     }
-    .btn:hover { opacity: 0.9; }
 
-    .note { margin-top: 10px; color: #555; font-size: 12px; }
+    .btn:hover {
+      filter: brightness(1.05);
+      box-shadow: 0 12px 24px rgba(15, 14, 71, 0.24);
+    }
+
+    .btn:active {
+      transform: translateY(1px);
+    }
+
+    .note {
+      margin-top: 10px;
+      color: #6b7280;
+      font-size: 12px;
+      text-align: center;
+    }
   </style>
 </head>
 
