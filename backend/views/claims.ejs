@@ -8,12 +8,12 @@
   <style>
     :root{
       /* Lush forest palette */
-      --g1: #2E6F40; /* primary forest green */
-      --g2: #CFFDFC; /* mint light */
-      --g3: #68BA7F; /* soft green */
-      --g4: #253D2C; /* deep green */
+      --g1: #2E6F40;
+      --g2: #CFFDFC;
+      --g3: #68BA7F;
+      --g4: #253D2C;
 
-      /* ✅ Background to WHITE */
+      /* Background WHITE */
       --page-bg: #ffffff;
 
       --text: #0f172a;
@@ -22,7 +22,6 @@
       --border: rgba(37, 61, 44, 0.18);
       --hover: rgba(104, 186, 127, 0.18);
 
-      /* alternating rows: white + grey */
       --row-odd: #ffffff;
       --row-even: #f2f2f2;
     }
@@ -145,7 +144,7 @@
 
     .note { margin-top: 10px; color: #3f5f4c; font-size: 12px; text-align: center; }
 
-    /* ✅ NEW: show claim coverage names in separate lines */
+    /* Show coverages on next lines */
     .coverageCell { white-space: pre-line; }
   </style>
 </head>
@@ -165,8 +164,8 @@
           <th style="width: 10%;">Claim No.</th>
           <th style="width: 22%;">Asset</th>
           <th style="width: 18%;">Claimed Parts and Labor<br><span class="muted">Claim Coverage names</span></th>
-          <th style="width: 10%;">Total Claimed Amount</th>
-          <th style="width: 10%;">Amount Paid</th>
+          <th style="width: 10%;">Total Claimed Amount(SEK)</th>
+          <th style="width: 10%;">Amount Paid(SEK)</th>
         </tr>
       </thead>
 
@@ -176,30 +175,27 @@
         <% } else {
              const first = rows[0];
 
-             // ✅ Display each coverage name on next line:
-             // - if it comes comma-separated -> convert commas to newlines
-             // - if it already contains \n -> it will render fine due to pre-line
-             const rawCoverage = (claimHeader && claimHeader.claimedPartsAndLabor) ? String(claimHeader.claimedPartsAndLabor) : "";
+             // Works for both comma-separated OR newline-separated input from Salesforce
+             const rawCoverage = (claimHeader && claimHeader.claimedPartsAndLabor)
+               ? String(claimHeader.claimedPartsAndLabor)
+               : "";
              const coverageDisplay = rawCoverage ? rawCoverage.replace(/,\s*/g, "\n") : "-";
         %>
-          <!-- ✅ Single UI row only -->
+
           <tr>
             <td><%= claimHeader.dealerAccountName || "-" %></td>
             <td><%= claimHeader.repairOrder || "-" %></td>
             <td><%= claimHeader.claimNumber || "-" %></td>
 
-            <!-- ✅ Asset: only Asset Registration No & VIN -->
             <td class="assetCell">
               <b>Asset Registration No:</b> <%= assetBlock?.assetRegNo || "-" %><br>
               <b>VIN No:</b> <%= assetBlock?.vin || "-" %>
             </td>
 
-            <!-- ✅ Claim coverage names shown one per line -->
             <td class="coverageCell"><%= coverageDisplay %></td>
 
             <td><%= (claimHeader.totalClaimedAmount ?? first.totalClaimedAmount ?? "-") %></td>
 
-            <!-- ✅ Single input, but submit will apply to all rows -->
             <td>
               <input
                 class="amountPaid"
@@ -207,10 +203,11 @@
                 step="0.01"
                 min="0"
                 data-index="0"
-                value="<%= first.amountPaid == null ? '' : first.amountPaid %>"
+                value=""
                 placeholder="Enter amount"/>
             </td>
           </tr>
+
         <% } %>
       </tbody>
     </table>
@@ -231,13 +228,32 @@
       submitBtn.addEventListener("click", async (e) => {
         e.preventDefault();
 
-        // ✅ Single Amount Paid input -> apply to ALL rows (keeps existing backend functionality)
+        // ✅ Treat input as TOTAL claim paid amount
         const inp = document.querySelector("input.amountPaid");
         const val = inp ? inp.value : "";
 
-        rows.forEach(r => {
-          r.amountPaid = val;
-        });
+        // ✅ Distribute total across all rows so Salesforce sum equals the entered value
+        const total = (val === "" || val == null) ? null : Number(val);
+
+        if (total == null || Number.isNaN(total)) {
+          rows.forEach(r => { r.amountPaid = ""; });
+        } else {
+          const n = rows.length || 1;
+
+          // 2-decimal distribution with exact remainder on last row
+          const per = Math.floor((total / n) * 100) / 100;
+          let used = 0;
+
+          rows.forEach((r, i) => {
+            if (i < n - 1) {
+              r.amountPaid = per.toFixed(2);
+              used += per;
+            } else {
+              const last = Math.round((total - used) * 100) / 100;
+              r.amountPaid = last.toFixed(2);
+            }
+          });
+        }
 
         try {
           const res = await fetch("/submit-claim-amounts", {
@@ -259,4 +275,3 @@
   </script>
 </body>
 </html>
-``
