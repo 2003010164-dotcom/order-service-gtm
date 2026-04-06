@@ -13,7 +13,7 @@
       --g3: #68BA7F; /* soft green */
       --g4: #253D2C; /* deep green */
 
-      /* ✅ Background to WHITE (as requested) */
+      /* ✅ Background to WHITE */
       --page-bg: #ffffff;
 
       --text: #0f172a;
@@ -144,6 +144,9 @@
     }
 
     .note { margin-top: 10px; color: #3f5f4c; font-size: 12px; text-align: center; }
+
+    /* ✅ NEW: show claim coverage names in separate lines */
+    .coverageCell { white-space: pre-line; }
   </style>
 </head>
 
@@ -170,8 +173,14 @@
       <tbody>
         <% if (!rows || rows.length === 0) { %>
           <tr><td colspan="7">No rows created (coverage counts may be 0).</td></tr>
-        <% } else { 
+        <% } else {
              const first = rows[0];
+
+             // ✅ Display each coverage name on next line:
+             // - if it comes comma-separated -> convert commas to newlines
+             // - if it already contains \n -> it will render fine due to pre-line
+             const rawCoverage = (claimHeader && claimHeader.claimedPartsAndLabor) ? String(claimHeader.claimedPartsAndLabor) : "";
+             const coverageDisplay = rawCoverage ? rawCoverage.replace(/,\s*/g, "\n") : "-";
         %>
           <!-- ✅ Single UI row only -->
           <tr>
@@ -185,8 +194,8 @@
               <b>VIN No:</b> <%= assetBlock?.vin || "-" %>
             </td>
 
-            <!-- ✅ Single cell with all Claim Coverage names -->
-            <td><%= claimHeader.claimedPartsAndLabor || "-" %></td>
+            <!-- ✅ Claim coverage names shown one per line -->
+            <td class="coverageCell"><%= coverageDisplay %></td>
 
             <td><%= (claimHeader.totalClaimedAmount ?? first.totalClaimedAmount ?? "-") %></td>
 
@@ -250,3 +259,4 @@
   </script>
 </body>
 </html>
+``
