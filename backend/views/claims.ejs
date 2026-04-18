@@ -118,6 +118,7 @@
       display: flex;
       gap: 10px;
       justify-content: center;
+      flex-wrap: wrap;
     }
 
     .btn {
@@ -142,6 +143,11 @@
       transform: translateY(1px);
     }
 
+    /* extra button colors */
+    .btn-approve { background: #2E6F40; }
+    .btn-reject  { background: #B91C1C; }
+    .btn-close   { background: #253D2C; }
+
     .note { margin-top: 10px; color: #3f5f4c; font-size: 12px; text-align: center; }
 
     /* Show coverages on next lines */
@@ -159,8 +165,8 @@
     <table id="claimsTable">
       <thead>
         <tr>
-          <th style="width: 16%;">Dealer Account </th>
-          <th style="width: 14%;">Repair Order </th>
+          <th style="width: 16%;">Dealer Account</th>
+          <th style="width: 14%;">Repair Order</th>
           <th style="width: 10%;">Claim No.</th>
           <th style="width: 22%;">Asset</th>
           <th style="width: 18%;">Claimed Parts and Labor<br><span class="muted">Claim Coverage names</span></th>
@@ -175,7 +181,6 @@
         <% } else {
              const first = rows[0];
 
-             // Works for both comma-separated OR newline-separated input from Salesforce
              const rawCoverage = (claimHeader && claimHeader.claimedPartsAndLabor)
                ? String(claimHeader.claimedPartsAndLabor)
                : "";
@@ -212,8 +217,12 @@
       </tbody>
     </table>
 
+    <!-- ✅ Buttons -->
     <div class="btnBar">
       <button class="btn" id="submitBtn">Submit Amount Paid</button>
+      <button class="btn btn-approve" id="approveBtn">Approved</button>
+      <button class="btn btn-reject" id="rejectBtn">Rejected</button>
+      <button class="btn btn-close" id="closeBtn">Closed</button>
     </div>
 
     <div class="note"></div>
@@ -221,8 +230,108 @@
   <% } %>
 
   <script>
+    // existing rows payload (unchanged)
     const rows = <%- JSON.stringify(rows || []) %>;
 
+    // ✅ claim context values for status mapping
+    const CLAIM_ID = "<%= (claimHeader && claimHeader.claimId) ? claimHeader.claimId : '' %>";
+
+    // TOTAL = Claim Total Claimed Amount (fallback to first row)
+    const TOTAL = (() => {
+      const v = "<%= (claimHeader && claimHeader.totalClaimedAmount != null) ? claimHeader.totalClaimedAmount : '' %>";
+      const asNum = Number(v);
+      if (!Number.isNaN(asNum) && v !== '') return asNum;
+      const fallback = rows && rows[0] ? Number(rows[0].totalClaimedAmount) : 0;
+      return Number.isNaN(fallback) ? 0 : fallback;
+    })();
+
+    // ----------------------------
+    // ✅ Helper: read PAID from input
+    // ----------------------------
+    function readPaid() {
+      const inp = document.querySelector("input.amountPaid");
+      const val = inp ? inp.value : "";
+      const n = (val === "" || val == null) ? 0 : Number(val);
+      return Number.isNaN(n) ? 0 : n;
+    }
+
+    // ----------------------------
+    // ✅ Helper: distribute total across rows (same logic you use in Submit)
+    // ----------------------------
+    function distributeAcrossRows(total) {
+      if (total == null || Number.isNaN(total)) {
+        rows.forEach(r => { r.amountPaid = ""; });
+        return;
+      }
+
+      const n = rows.length || 1;
+
+      const per = Math.floor((total / n) * 100) / 100;
+      let used = 0;
+
+      rows.forEach((r, i) => {
+        if (i < n - 1) {
+          r.amountPaid = per.toFixed(2);
+          used += per;
+        } else {
+          const last = Math.round((total - used) * 100) / 100;
+          r.amountPaid = last.toFixed(2);
+        }
+      });
+    }
+
+    // ----------------------------
+    // ✅ Helper: submit payment to Salesforce (reuses existing endpoint)
+    // ----------------------------
+    async function submitPayment(total) {
+      distributeAcrossRows(total);
+
+      const res = await fetch("/submit-claim-amounts", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ rows })
+      });
+
+      const data = await res.json().catch(() => null);
+      if (!res.ok) throw new Error(data?.message || JSON.stringify(data) || "Payment submit failed");
+      return data;
+    }
+
+    // ----------------------------
+    // ✅ Helper: update claim status via Node route
+    // ----------------------------
+    async function updateClaimStatus(status) {
+      if (!CLAIM_ID) throw new Error("ClaimId not found in page.");
+
+      const res = await fetch("/update-claim-status", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ claimId: CLAIM_ID, status })
+      });
+
+      const data = await res.json().catch(() => null);
+      if (!res.ok) throw new Error(data?.message || JSON.stringify(data) || "Status update failed");
+      return data;
+    }
+
+    // ----------------------------
+    // ✅ Status mapping (exact requirement)
+    // ----------------------------
+    function statusForApprove(paid, total) {
+      if (paid <= 0) return "Approved";
+      if (paid > 0 && paid < total) return "Pending";
+      return "Paid-in Full"; // paid >= total
+    }
+
+    function statusForClose(paid, total) {
+      if (paid >= total) return "Closed";
+      if (paid > 0 && paid < total) return "Compromised/Settled";
+      return "Closed"; // paid == 0 -> Closed but payment not completed
+    }
+
+    // ==========================================================
+    // ✅ EXISTING Submit Amount Paid button logic (UNCHANGED)
+    // ==========================================================
     const submitBtn = document.getElementById("submitBtn");
     if (submitBtn) {
       submitBtn.addEventListener("click", async (e) => {
@@ -232,15 +341,12 @@
         const inp = document.querySelector("input.amountPaid");
         const val = inp ? inp.value : "";
 
-        // ✅ Distribute total across all rows so Salesforce sum equals the entered value
         const total = (val === "" || val == null) ? null : Number(val);
 
         if (total == null || Number.isNaN(total)) {
           rows.forEach(r => { r.amountPaid = ""; });
         } else {
           const n = rows.length || 1;
-
-          // 2-decimal distribution with exact remainder on last row
           const per = Math.floor((total / n) * 100) / 100;
           let used = 0;
 
@@ -269,6 +375,65 @@
 
         } catch (err) {
           alert("Network error: " + err.message);
+        }
+      });
+    }
+
+    // ==========================================================
+    // ✅ NEW Buttons: Approved / Rejected / Closed
+    // (No changes to existing submit functionality)
+    // ==========================================================
+    const approveBtn = document.getElementById("approveBtn");
+    const rejectBtn  = document.getElementById("rejectBtn");
+    const closeBtn   = document.getElementById("closeBtn");
+
+    if (approveBtn) {
+      approveBtn.addEventListener("click", async (e) => {
+        e.preventDefault();
+        try {
+          const paid = readPaid();
+
+          // payment should be stored too
+          await submitPayment(paid);
+
+          const status = statusForApprove(paid, TOTAL);
+          await updateClaimStatus(status);
+
+          alert("✅ Approved flow done. Status set to: " + status);
+        } catch (err) {
+          alert("❌ " + err.message);
+        }
+      });
+    }
+
+    if (rejectBtn) {
+      rejectBtn.addEventListener("click", async (e) => {
+        e.preventDefault();
+        try {
+          const status = "Rejected";
+          await updateClaimStatus(status);
+          alert("✅ Rejected. Status set to: " + status);
+        } catch (err) {
+          alert("❌ " + err.message);
+        }
+      });
+    }
+
+    if (closeBtn) {
+      closeBtn.addEventListener("click", async (e) => {
+        e.preventDefault();
+        try {
+          const paid = readPaid();
+
+          // payment should be stored too
+          await submitPayment(paid);
+
+          const status = statusForClose(paid, TOTAL);
+          await updateClaimStatus(status);
+
+          alert("✅ Closed flow done. Status set to: " + status);
+        } catch (err) {
+          alert("❌ " + err.message);
         }
       });
     }
