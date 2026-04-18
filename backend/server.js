@@ -656,6 +656,62 @@ app.get("/simulation", (req, res) => {
   res.render("simulation", { latestAsset });
 });
 
+// ===============================
+// Update Claim Status in Salesforce
+// ===============================
+app.post("/update-claim-status", async (req, res) => {
+  try {
+    const { claimId, status } = req.body || {};
+
+    if (!claimId || !status) {
+      return res.status(400).json({
+        ok: false,
+        message: "claimId and status are required"
+      });
+    }
+
+    // Get Salesforce token (uses your existing password flow)
+    const auth = await getSalesforceToken();
+
+    // Salesforce Apex REST endpoint
+    const endpoint = `${auth.instance_url}/services/apexrest/claimstatus/v1`;
+
+    const sfResp = await axios.post(
+      endpoint,
+      { claimId, status },
+      {
+        headers: {
+          Authorization: `Bearer ${auth.access_token}`,
+          "Content-Type": "application/json"
+        },
+        timeout: 20000
+      }
+    );
+
+    return res.status(200).json({
+      ok: true,
+      message: "Claim status updated in Salesforce",
+      salesforceResponse: sfResp.data
+    });
+
+  } catch (err) {
+    console.error("❌ /update-claim-status error:", err.message);
+
+    if (err.response) {
+      return res.status(err.response.status).json({
+        ok: false,
+        message: "Salesforce error",
+        details: err.response.data
+      });
+    }
+
+    return res.status(500).json({
+      ok: false,
+      message: err.message
+    });
+  }
+});
+
 
 
 app.get("/delivery-duration", (req,res)=>{
