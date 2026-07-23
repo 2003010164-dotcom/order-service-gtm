@@ -762,7 +762,7 @@
 
       <div class="kpiCard kpi-green">
         <div class="kpiLabel">EngineTempHigh</div>
-        <div class="kpiValue">&gt; 30</div>
+        <div class="kpiValue">&gt; 110</div>
         <div class="kpiSub">Threshold-based case creation when engine temperature crosses limit</div>
       </div>
 
@@ -783,7 +783,7 @@
       <div class="panel">
         <div class="panelHeader">
           <h2 class="panelTitle">
-            <span class="icon">🚚</span>
+            <span class="icon"></span>
             Telemetric Event Input
           </h2>
           <div class="panelDesc">
@@ -824,7 +824,7 @@
                 <input id="sensorValueNumber" type="number" value="<%= model.sensorValueNumber %>" placeholder="Value" />
                 <input id="sensorUnit" value="<%= model.sensorUnit %>" placeholder="Unit" />
               </div>
-              <div class="fieldHint">Example values: 31 °C, 6001 RPM, or 55 %.</div>
+              <div class="fieldHint">Example values: 111 °C, 6505 RPM.</div>
             </div>
 
             <div class="field span-4">
@@ -855,7 +855,7 @@
             </div>
 
             <div class="field span-12">
-              <label for="recommendedAction">Recommended_Action__c</label>
+              <label for="recommendedAction">Recommended Action</label>
               <input id="recommendedActionShort" value="<%= model.recommendedAction %>" style="margin-bottom:8px;" placeholder="Short recommendation" />
               <textarea id="recommendedAction" placeholder="Provide maintenance or operational guidance"><%= model.recommendedAction %></textarea>
               <div class="fieldHint">
@@ -874,8 +874,8 @@
 
           <div class="smallNote">
             <strong>Testing tips</strong><br />
-            • For <strong>EngineTempHigh</strong>, enter <strong>31</strong> to auto-create a Case.<br />
-            • For <strong>RPMSpike</strong>, enter <strong>6001</strong> to auto-create a Case.<br />
+            • For <strong>EngineTempHigh</strong>, enter <strong>111</strong> to auto-create a Case.<br />
+            • For <strong>RPMSpike</strong>, enter <strong>6505</strong> to auto-create a Case.<br />
             • For <strong>Predictive Maintenance</strong>, enter <strong>55</strong> to auto-send an event for dashboard updates.
           </div>
         </div>
@@ -1115,7 +1115,7 @@
         if (t === undefined || t === null) {
           updateSensorCellUI("");
           lastExceeded = false;
-          showStatus("success", "ℹ️ No threshold configured for this event type. Not auto-sending.");
+          showStatus("success", " No threshold configured for this event type. Not auto-sending.");
           return;
         }
 
