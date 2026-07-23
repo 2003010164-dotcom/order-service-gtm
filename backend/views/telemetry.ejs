@@ -799,13 +799,13 @@
             <div class="field span-6">
               <label for="vehicleSerialNumber">Vehicle</label>
               <input id="vehicleSerialNumber" value="<%= model.vehicleSerialNumber %>" placeholder="Vehicle serial number" />
-              <div class="fieldHint">Primary vehicle reference used to identify the source asset.</div>
+              <div class="fieldHint"></div>
             </div>
 
             <div class="field span-6">
               <label for="eventTimestamp">Event Timestamp</label>
               <input id="eventTimestamp" type="datetime-local" value="<%= model.eventTimestamp %>" />
-              <div class="fieldHint">Timestamp associated with the current telematics event.</div>
+              <div class="fieldHint"></div>
             </div>
 
             <div class="field span-4">
@@ -815,7 +815,7 @@
                 <option value="EngineTempHigh" <%= model.eventType === 'EngineTempHigh' ? 'selected' : '' %>>EngineTempHigh</option>
                 <option value="Predictive Maintenance" <%= model.eventType === 'Predictive Maintenance' ? 'selected' : '' %>>Predictive Maintenance</option>
               </select>
-              <div class="fieldHint">Select the telemetry signal category to evaluate.</div>
+              <div class="fieldHint"></div>
             </div>
 
             <div class="field span-4" id="sensorCell">
@@ -824,7 +824,7 @@
                 <input id="sensorValueNumber" type="number" value="<%= model.sensorValueNumber %>" placeholder="Value" />
                 <input id="sensorUnit" value="<%= model.sensorUnit %>" placeholder="Unit" />
               </div>
-              <div class="fieldHint">Example values: 111 °C, 6505 RPM.</div>
+              <div class="fieldHint"></div>
             </div>
 
             <div class="field span-4">
@@ -835,13 +835,13 @@
                 <option value="High" <%= model.severity === 'High' ? 'selected' : '' %>>High</option>
                 <option value="Critical" <%= model.severity === 'Critical' ? 'selected' : '' %>>Critical</option>
               </select>
-              <div class="fieldHint">Assign the expected operational or service impact level.</div>
+              <div class="fieldHint"></div>
             </div>
 
             <div class="field span-6">
               <label for="component">Component</label>
               <input id="component" value="<%= model.component %>" placeholder="Engine, Cooling System, Transmission..." />
-              <div class="fieldHint">Mention the component most relevant to this signal.</div>
+              <div class="fieldHint"></div>
             </div>
 
             <div class="field span-6">
@@ -851,7 +851,7 @@
                 <option value="In Progress" <%= model.status === 'In Progress' ? 'selected' : '' %>>In Progress</option>
                 <option value="Resolved" <%= model.status === 'Resolved' ? 'selected' : '' %>>Resolved</option>
               </select>
-              <div class="fieldHint">Used by operations and service teams to track the alert state.</div>
+              <div class="fieldHint"></div>
             </div>
 
             <div class="field span-12">
@@ -859,7 +859,7 @@
               <input id="recommendedActionShort" value="<%= model.recommendedAction %>" style="margin-bottom:8px;" placeholder="Short recommendation" />
               <textarea id="recommendedAction" placeholder="Provide maintenance or operational guidance"><%= model.recommendedAction %></textarea>
               <div class="fieldHint">
-                Add the recommended response, inspection step, or repair guidance for the current event.
+                
               </div>
             </div>
           </div>
