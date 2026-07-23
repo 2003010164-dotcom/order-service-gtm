@@ -736,8 +736,8 @@
         <div class="noteCard">
           <h3>Current Threshold Rules</h3>
           <p>
-            <strong>EngineTempHigh &gt; 30</strong><br />
-            <strong>RPMSpike &gt; 6000</strong><br />
+            <strong>EngineTempHigh &gt; 110</strong><br />
+            <strong>RPMSpike &gt; 6500</strong><br />
             <strong>Predictive Maintenance</strong> does not use a threshold and is sent automatically on change.
           </p>
         </div>
@@ -768,7 +768,7 @@
 
       <div class="kpiCard kpi-orange">
         <div class="kpiLabel">RPMSpike</div>
-        <div class="kpiValue">&gt; 6000</div>
+        <div class="kpiValue">&gt; 6500</div>
         <div class="kpiSub">Overspeed / spike detection for high-RPM anomaly reporting</div>
       </div>
 
@@ -797,19 +797,19 @@
 
           <div class="formGrid">
             <div class="field span-6">
-              <label for="vehicleSerialNumber">Vehicle__c</label>
+              <label for="vehicleSerialNumber">Vehicle</label>
               <input id="vehicleSerialNumber" value="<%= model.vehicleSerialNumber %>" placeholder="Vehicle serial number" />
               <div class="fieldHint">Primary vehicle reference used to identify the source asset.</div>
             </div>
 
             <div class="field span-6">
-              <label for="eventTimestamp">Event_Timestamp__c</label>
+              <label for="eventTimestamp">Event Timestamp</label>
               <input id="eventTimestamp" type="datetime-local" value="<%= model.eventTimestamp %>" />
               <div class="fieldHint">Timestamp associated with the current telematics event.</div>
             </div>
 
             <div class="field span-4">
-              <label for="eventType">Event_Type__c</label>
+              <label for="eventType">Event Type</label>
               <select id="eventType">
                 <option value="RPMSpike" <%= model.eventType === 'RPMSpike' ? 'selected' : '' %>>RPMSpike</option>
                 <option value="EngineTempHigh" <%= model.eventType === 'EngineTempHigh' ? 'selected' : '' %>>EngineTempHigh</option>
@@ -819,7 +819,7 @@
             </div>
 
             <div class="field span-4" id="sensorCell">
-              <label>Sensor_Value__c</label>
+              <label>Sensor Value</label>
               <div class="sensorGrid">
                 <input id="sensorValueNumber" type="number" value="<%= model.sensorValueNumber %>" placeholder="Value" />
                 <input id="sensorUnit" value="<%= model.sensorUnit %>" placeholder="Unit" />
@@ -828,7 +828,7 @@
             </div>
 
             <div class="field span-4">
-              <label for="severity">Severity__c</label>
+              <label for="severity">Severity</label>
               <select id="severity">
                 <option value="Low" <%= model.severity === 'Low' ? 'selected' : '' %>>Low</option>
                 <option value="Medium" <%= model.severity === 'Medium' ? 'selected' : '' %>>Medium</option>
@@ -839,13 +839,13 @@
             </div>
 
             <div class="field span-6">
-              <label for="component">Component__c</label>
+              <label for="component">Component</label>
               <input id="component" value="<%= model.component %>" placeholder="Engine, Cooling System, Transmission..." />
               <div class="fieldHint">Mention the component most relevant to this signal.</div>
             </div>
 
             <div class="field span-6">
-              <label for="status">Status__c</label>
+              <label for="status">Status</label>
               <select id="status">
                 <option value="New" <%= model.status === 'New' ? 'selected' : '' %>>New</option>
                 <option value="In Progress" <%= model.status === 'In Progress' ? 'selected' : '' %>>In Progress</option>
@@ -994,8 +994,8 @@
   <script>
     // UI-side thresholds (same as Salesforce example)
     const THRESHOLDS = {
-      EngineTempHigh: 30,
-      RPMSpike: 6000
+      EngineTempHigh: 110,
+      RPMSpike: 6500
       // Predictive Maintenance: no threshold (always send to update dashboard needle)
     };
 
