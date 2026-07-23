@@ -698,7 +698,7 @@
       if (tabletSensorVal) tabletSensorVal.textContent = String(temp);
 
       if (temp > 110){
-        setBadge("Threshold exceeded (>110) — telematics will auto-send", "danger");
+        setBadge("Critical Temperature Detected — Alert Escalated", "danger");
       } else {
         setBadge("Normal — monitoring", "good");
       }
